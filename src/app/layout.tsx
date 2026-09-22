@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://josht.xyz"),
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"

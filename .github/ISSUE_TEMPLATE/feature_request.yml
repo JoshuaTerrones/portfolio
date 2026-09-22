@@ -1,0 +1,28 @@
+name: ✨ Feature
+description: 💡 Registrar una idea o mejora
+title: "[Feature]: "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: 💡 La idea
+      description: ¿Qué quiero añadir?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reason
+    attributes:
+      label: 🎯 ¿Por qué?
+      description: ¿Qué problema resuelve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: 📎 Notas
+      description: Opcional.
+    validations:
+      required: false

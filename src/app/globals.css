@@ -150,10 +150,10 @@
     @apply font-sans;
   }
 }
+@keyframes blink {
+  50% { opacity: 0; }
+}
 @keyframes dot-glow {
   0%, 100% { opacity: 1; box-shadow: 0 0 0 transparent; }
   50% { opacity: 0.5; box-shadow: 0 0 12px var(--primary); }
-}
-@keyframes blink {
-  50% { opacity: 0; }
 }

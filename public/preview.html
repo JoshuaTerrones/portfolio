@@ -415,6 +415,56 @@
   footer > div:first-child { margin-bottom: 12px; }
   footer > div:last-child { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; }
 }
+
+/* ============ MÓVIL: CENTRAR BOTONES SUELTOS ============ */
+@media (max-width: 780px) {
+  .btn-submit { align-self: center !important; }
+  .cv-cta { justify-content: center !important; }
+}
+
+/* ============ MÓVIL: CENTRAR 404 ============ */
+@media (max-width: 780px) {
+  .error-page { align-items: center !important; text-align: center !important; min-height: 55vh !important; }
+  .error-page .terminal-line { justify-content: center !important; }
+  .error-page p { margin-left: auto !important; margin-right: auto !important; }
+  .error-page .back-btn { margin: 0 auto !important; }
+}
+
+/* ============ FOOTER: CENTRADO GLOBAL + ESPACIADO EN LINKS ============ */
+footer {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  gap: 10px !important;
+  padding: 30px 0 !important;
+}
+footer > div:last-child {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px 18px !important;
+}
+footer a {
+  white-space: nowrap !important;
+  display: inline-block !important;
+}
+
+/* ============ 404: CENTRADO GLOBAL (DESKTOP + MÓVIL) ============ */
+.error-page {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  min-height: 55vh !important;
+  padding: 40px 0 !important;
+}
+.error-page .terminal-line { justify-content: center !important; }
+.error-page p { margin-left: auto !important; margin-right: auto !important; }
+.error-page .back-btn { margin: 0 auto !important; }
 </style>
 </head>
 <body>

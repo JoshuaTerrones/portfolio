@@ -1,58 +1,39 @@
 import { TerminalLine } from "@/components/terminal-line";
-import { ProjectListItem } from "@/components/project-list-item";
+import { MiniAbout } from "@/components/mini-about";
+import { FeaturedProjects } from "@/components/featured-projects";
+import { MiniContact } from "@/components/mini-contact";
 
-const PROJECTS = [
-  {
-    num: "01",
-    title: "Proyecto 01",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1", "tech-2"],
-  },
-  {
-    num: "02",
-    title: "Proyecto 02",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-  {
-    num: "03",
-    title: "Proyecto 03",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-  {
-    num: "04",
-    title: "Proyecto 04",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-  {
-    num: "05",
-    title: "Proyecto 05",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-];
-
-export default function ProyectosPage() {
+export default function Home() {
   return (
-    <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
-      <div className="pt-6 pb-2 md:pt-8 md:pb-3">
-        <TerminalLine cmd="ls proyectos/" />
+    <div className="mx-auto w-full max-w-[1080px] px-6 py-8 md:px-8 md:py-12">
+      <TerminalLine cmd="whoami" />
 
-        <h1 className="mb-5 font-heading text-[32px] leading-none tracking-[-0.03em] md:text-[80px] md:leading-[0.95]">
-          Pro<em className="italic text-primary">yectos</em>
-        </h1>
-        <p className="max-w-[620px] text-[15px] leading-snug text-muted-foreground md:text-[17px]">
-          Todos los proyectos, ordenados por relevancia.
-        </p>
+      <h1 className="mb-5 font-heading text-[32px] leading-none tracking-[-0.03em] md:text-[80px] md:leading-[0.95]">
+        Construyo <em className="italic text-primary">cosas</em> que
+        <br />
+        funcionan.
+      </h1>
+
+      <p className="max-w-[620px] text-[15px] leading-snug text-muted-foreground md:text-[17px]">
+        Desarrollador{" "}
+        <strong className="font-medium text-foreground">backend &amp; full-stack</strong>. Python,
+        Django, TypeScript, Next.js. De Lima, Perú.
+      </p>
+
+      <div className="mt-5 flex flex-col gap-2 font-[family-name:var(--font-geist-mono)] text-xs tracking-wide text-muted-foreground md:mt-6 md:flex-row md:gap-7">
+        <span className="flex items-center gap-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Abierto a oportunidades
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
+          Lima, Perú
+        </span>
       </div>
 
-      <section className="pt-0 pb-6 md:pb-8">
-        {PROJECTS.map((p) => (
-          <ProjectListItem key={p.num} {...p} />
-        ))}
-      </section>
+      <MiniAbout />
+      <FeaturedProjects />
+      <MiniContact />
     </div>
   );
 }

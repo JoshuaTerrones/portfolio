@@ -48,12 +48,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* ============================================
-   ACENTOS — 6 paletas con par claro/oscuro
-   Cada una define --accent-l y --accent-d.
-   El valor activo (--accent) se resuelve según
-   el tema actual en :root o .dark.
-   ============================================ */
+/* ACENTOS — 6 paletas con par claro/oscuro */
 [data-accent="orange"]  { --accent-l: oklch(0.55 0.19 38);  --accent-d: oklch(0.72 0.19 48); }
 [data-accent="wine"]    { --accent-l: oklch(0.42 0.13 25);  --accent-d: oklch(0.68 0.16 25); }
 [data-accent="blue"]    { --accent-l: oklch(0.4 0.15 265);  --accent-d: oklch(0.72 0.14 250); }
@@ -61,12 +56,9 @@
 [data-accent="violet"]  { --accent-l: oklch(0.5 0.22 290);  --accent-d: oklch(0.72 0.15 290); }
 [data-accent="rose"]    { --accent-l: oklch(0.5 0.19 355);  --accent-d: oklch(0.72 0.16 355); }
 
-/* Fallback: si no hay data-accent, usa orange */
 :root:not([data-accent]) { --accent-l: oklch(0.55 0.19 38); --accent-d: oklch(0.72 0.19 48); }
 
-/* ============================================
-   MODO CLARO
-   ============================================ */
+/* MODO CLARO */
 :root {
   --background: oklch(0.975 0.008 85);
   --foreground: oklch(0.2 0 0);
@@ -102,9 +94,7 @@
   --sidebar-ring: var(--accent-l);
 }
 
-/* ============================================
-   MODO OSCURO
-   ============================================ */
+/* MODO OSCURO */
 .dark {
   --background: oklch(0.16 0 0);
   --foreground: oklch(0.93 0 0);
@@ -150,6 +140,7 @@
     @apply font-sans;
   }
 }
+
 @keyframes blink {
   50% { opacity: 0; }
 }

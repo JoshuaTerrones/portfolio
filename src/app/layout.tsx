@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  axes: ["opsz", "SOFT", "WONK"],
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,13 +51,21 @@ const accentRotationScript = `
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
+      lang="es"
       data-accent="orange"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans")}
+      className={cn(
+        "h-full antialiased",
+        fraunces.variable,
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans"
+      )}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-background text-foreground">
         <script dangerouslySetInnerHTML={{ __html: accentRotationScript }} />
-        {children}
+        <Header />
+        <main className="flex-1">{children}</main>
+        <Footer />
         <Analytics />
         <SpeedInsights />
       </body>

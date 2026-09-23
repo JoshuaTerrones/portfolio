@@ -36,12 +36,12 @@ export function ProcesoSidebar({ chapters }: ProcesoSidebarProps) {
   }, [chapters]);
 
   return (
-    <aside className="sticky top-24 border-b border-border pb-3 md:border-0 md:pb-0">
-      <ul className="flex flex-wrap gap-3 md:block">
+    <aside className="border-b border-border pb-3 md:sticky md:top-24 md:border-0 md:pb-0">
+      <ul className="block">
         {chapters.map((c) => {
           const active = activeId === c.id;
           return (
-            <li key={c.id}>
+            <li key={c.id} className="border-b border-border py-2.5 last:border-0">
               <a
                 href={`#${c.id}`}
                 className={`block border-b-2 border-transparent pb-1 font-[family-name:var(--font-geist-mono)] text-[13px] transition-colors md:border-b-0 md:border-l-2 md:pb-0 md:pl-3 ${

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
+  style: ["normal", "italic"],
   axes: ["opsz", "SOFT", "WONK"],
 });
 

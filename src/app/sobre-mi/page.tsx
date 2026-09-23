@@ -1,4 +1,6 @@
 import { ContribGrid } from "@/components/contrib-grid";
+import { TerminalLine } from "@/components/terminal-line";
+import { SectionLabel } from "@/components/section-label";
 
 const AREAS = [
   {
@@ -119,11 +121,8 @@ export default function SobreMiPage() {
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
       {/* Hero */}
       <div className="pt-6 pb-4 md:pt-8 md:pb-4">
-        <div className="mb-6 flex items-center gap-2.5 font-[family-name:var(--font-geist-mono)] text-[15px] text-muted-foreground">
-          <span className="font-medium text-primary">$</span>
-          <span className="text-foreground">cat sobre-mi.md</span>
-          <span className="inline-block h-4 w-[9px] animate-[blink_1.2s_step-end_infinite] bg-primary" />
-        </div>
+        <TerminalLine cmd="cat sobre-mi.md" />
+
         <h1 className="mb-5 font-heading text-[36px] leading-[0.95] tracking-[-0.03em] md:text-[68px]">
           Sobre <em className="italic text-primary">mí</em>.
         </h1>
@@ -139,9 +138,7 @@ export default function SobreMiPage() {
 
       {/* Actividad reciente */}
       <section className="py-5 md:py-6">
-        <div className="mb-4 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
-          <span className="text-primary">— </span>Actividad reciente
-        </div>
+        <SectionLabel>Actividad reciente</SectionLabel>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
           <div className="rounded-xl border border-border bg-card p-[22px]">
             <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-primary">

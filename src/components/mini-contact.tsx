@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function MiniContact() {
   return (
-    <section className="flex flex-col items-start justify-between gap-5 py-6 md:flex-row md:items-center">
+    <section className="flex flex-col items-center justify-between gap-3 py-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
       <p className="max-w-[500px] font-heading text-[18px] leading-tight md:text-[22px]">
         ¿Tienes un proyecto en mente? <em className="italic text-primary">Hablemos.</em>
       </p>

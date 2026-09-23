@@ -7,7 +7,7 @@ export function FeaturedProjects() {
   const featured = PROJECTS.slice(0, 3);
 
   return (
-    <section className="py-6">
+    <section className="py-4 md:py-6">
       <SectionLabel>Proyectos destacados</SectionLabel>
 
       {featured.map((p) => (
@@ -20,7 +20,7 @@ export function FeaturedProjects() {
         />
       ))}
 
-      <div className="pt-5">
+      <div className="pt-3 md:pt-5">
         <Link
           href="/proyectos"
           className="inline-block rounded-md border border-primary px-5 py-2.5 font-[family-name:var(--font-geist-mono)] text-[13px] text-primary transition-colors hover:bg-primary hover:text-background"

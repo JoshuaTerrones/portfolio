@@ -1,3 +1,4 @@
+import { TerminalLine } from "@/components/terminal-line";
 import { MiniAbout } from "@/components/mini-about";
 import { FeaturedProjects } from "@/components/featured-projects";
 import { MiniContact } from "@/components/mini-contact";
@@ -5,11 +6,7 @@ import { MiniContact } from "@/components/mini-contact";
 export default function Home() {
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 py-8 md:px-8 md:py-12">
-      <div className="mb-6 flex items-center gap-2.5 font-[family-name:var(--font-geist-mono)] text-[15px] text-muted-foreground">
-        <span className="font-medium text-primary">$</span>
-        <span className="text-foreground">whoami</span>
-        <span className="inline-block h-4 w-[9px] animate-[blink_1.2s_step-end_infinite] bg-primary" />
-      </div>
+      <TerminalLine cmd="whoami" />
 
       <h1 className="mb-5 font-heading text-[32px] leading-none tracking-[-0.03em] md:text-[80px] md:leading-[0.95]">
         Construyo <em className="italic text-primary">cosas</em> que

@@ -6,7 +6,7 @@ type SectionProps = React.HTMLAttributes<HTMLElement> & {
 
 export function Section({ children, className, ...props }: SectionProps) {
   return (
-    <section className={cn("py-16 md:py-24", className)} {...props}>
+    <section className={cn("py-5 md:py-6", className)} {...props}>
       {children}
     </section>
   );

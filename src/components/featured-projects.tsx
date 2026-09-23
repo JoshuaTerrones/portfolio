@@ -1,5 +1,5 @@
 import Link from "next/link";
-
+import { SectionLabel } from "@/components/section-label";
 const PROJECTS = [
   {
     num: "01",
@@ -24,10 +24,7 @@ const PROJECTS = [
 export function FeaturedProjects() {
   return (
     <section className="py-6">
-      <div className="mb-4 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
-        <span className="text-primary">— </span>Proyectos destacados
-      </div>
-
+      <SectionLabel>Proyectos destacados</SectionLabel>
       {PROJECTS.map((p) => (
         <Link
           key={p.num}

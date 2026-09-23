@@ -54,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="es"
       data-accent="orange"
+      suppressHydrationWarning
       className={cn(
         "h-full antialiased",
         fraunces.variable,

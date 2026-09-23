@@ -3,21 +3,21 @@ import Link from "next/link";
 const PROJECTS = [
   {
     num: "01",
-    title: "Bookify",
-    description: "Sistema de gestión de biblioteca full-stack.",
-    tags: ["Django", "Next.js"],
+    title: "Proyecto 01",
+    description: "Descripción breve placeholder.",
+    tags: ["tech-1", "tech-2"],
   },
   {
     num: "02",
-    title: "Criterio Arquitectónico",
-    description: "Portafolio web para despacho de arquitectura.",
-    tags: ["HTML"],
+    title: "Proyecto 02",
+    description: "Descripción breve placeholder.",
+    tags: ["tech-1"],
   },
   {
     num: "03",
-    title: "Mister Hood's",
-    description: "Sitio web para empresa de limpieza.",
-    tags: ["HTML"],
+    title: "Proyecto 03",
+    description: "Descripción breve placeholder.",
+    tags: ["tech-1"],
   },
 ];
 

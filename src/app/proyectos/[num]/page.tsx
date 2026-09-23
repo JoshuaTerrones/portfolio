@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectDetail } from "@/components/project-detail";
 import { PROJECTS, getProjectByNum } from "@/lib/projects";
@@ -8,6 +9,16 @@ type PageProps = {
 
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ num: p.num }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { num } = await params;
+  const project = getProjectByNum(num);
+  if (!project) return {};
+  return {
+    title: `${project.title} — Joshua Terrones`,
+    description: project.subtitle,
+  };
 }
 
 export default async function ProyectoDetallePage({ params }: PageProps) {

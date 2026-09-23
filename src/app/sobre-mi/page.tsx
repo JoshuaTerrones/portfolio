@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ContribGrid } from "@/components/contrib-grid";
 import { TerminalLine } from "@/components/terminal-line";
 import { SectionLabel } from "@/components/section-label";
@@ -115,6 +116,11 @@ const STACK: { cat: string; items: { name: string; icon?: string }[] }[] = [
     items: [{ name: "Español (nativo)" }, { name: "Inglés (avanzado)" }],
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Sobre mí — Joshua Terrones",
+  description: "Historia, stack técnico, formación y experiencia de Joshua Terrones.",
+};
 
 export default function SobreMiPage() {
   return (

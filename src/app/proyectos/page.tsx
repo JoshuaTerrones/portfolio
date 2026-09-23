@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { TerminalLine } from "@/components/terminal-line";
 import { ProjectListItem } from "@/components/project-list-item";
 
@@ -33,6 +34,11 @@ const PROJECTS = [
     tags: ["tech-1"],
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Proyectos — Joshua Terrones",
+  description: "Todos los proyectos de Joshua Terrones, ordenados por relevancia.",
+};
 
 export default function ProyectosPage() {
   return (

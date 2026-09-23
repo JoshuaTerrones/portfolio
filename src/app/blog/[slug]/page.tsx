@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogArticle } from "@/components/blog-article";
 import { POSTS, getPostBySlug } from "@/lib/posts";
@@ -8,6 +9,16 @@ type PageProps = {
 
 export function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+  if (!post) return {};
+  return {
+    title: `${post.title} — Joshua Terrones`,
+    description: post.excerpt,
+  };
 }
 
 export default async function BlogPostPage({ params }: PageProps) {

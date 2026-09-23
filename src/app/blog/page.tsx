@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { TerminalLine } from "@/components/terminal-line";
 import { BlogListItem } from "@/components/blog-list-item";
 import { POSTS } from "@/lib/posts";
+
+export const metadata: Metadata = {
+  title: "Blog — Joshua Terrones",
+  description: "Bitácora del proceso. Lo que aprendo construyendo.",
+};
 
 export default function BlogPage() {
   return (

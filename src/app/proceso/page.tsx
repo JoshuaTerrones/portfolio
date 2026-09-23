@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { TerminalLine } from "@/components/terminal-line";
 import { ProcesoSidebar } from "@/components/proceso-sidebar";
 import { CHAPTERS } from "@/lib/proceso";
+
+export const metadata: Metadata = {
+  title: "Proceso — Joshua Terrones",
+  description: "El proceso detrás del portafolio: decisiones, errores y wireframes.",
+};
 
 export default function ProcesoPage() {
   return (

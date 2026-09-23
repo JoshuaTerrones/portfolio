@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { TerminalLine } from "@/components/terminal-line";
 import { ContactForm } from "@/components/contact-form";
 
@@ -18,6 +19,11 @@ const INFO = [
     href: "https://linkedin.com/in/joshuaterrones",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Contacto — Joshua Terrones",
+  description: "Escríbeme para hablar de un proyecto, una oferta o simplemente saludar.",
+};
 
 export default function ContactoPage() {
   return (

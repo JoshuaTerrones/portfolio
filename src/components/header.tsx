@@ -63,6 +63,7 @@ export function Header() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "relative w-full px-4 py-2.5 text-[15px] transition-colors md:w-auto md:px-0 md:py-0 md:text-sm",
                   "after:absolute after:bottom-0 after:left-4 after:h-px after:w-0 after:bg-primary after:transition-all md:after:-bottom-1 md:after:left-0",

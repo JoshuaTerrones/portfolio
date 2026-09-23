@@ -1,35 +1,23 @@
 import Link from "next/link";
 import { ProjectListItem } from "@/components/project-list-item";
 import { SectionLabel } from "@/components/section-label";
-
-const PROJECTS = [
-  {
-    num: "01",
-    title: "Proyecto 01",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1", "tech-2"],
-  },
-  {
-    num: "02",
-    title: "Proyecto 02",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-  {
-    num: "03",
-    title: "Proyecto 03",
-    description: "Descripción breve placeholder.",
-    tags: ["tech-1"],
-  },
-];
+import { PROJECTS } from "@/lib/projects";
 
 export function FeaturedProjects() {
+  const featured = PROJECTS.slice(0, 3);
+
   return (
     <section className="py-6">
       <SectionLabel>Proyectos destacados</SectionLabel>
 
-      {PROJECTS.map((p) => (
-        <ProjectListItem key={p.num} {...p} />
+      {featured.map((p) => (
+        <ProjectListItem
+          key={p.num}
+          num={p.num}
+          title={p.title}
+          description={p.subtitle}
+          tags={p.tags}
+        />
       ))}
 
       <div className="pt-5">

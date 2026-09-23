@@ -41,13 +41,13 @@ export function ProcesoSidebar({ chapters }: ProcesoSidebarProps) {
         {chapters.map((c) => {
           const active = activeId === c.id;
           return (
-            <li key={c.id} className="border-b border-border py-2.5 last:border-0">
+            <li key={c.id} className="border-b border-border last:border-0 md:border-0">
               <a
                 href={`#${c.id}`}
-                className={`block border-b-2 border-transparent pb-1 font-[family-name:var(--font-geist-mono)] text-[13px] transition-colors md:border-b-0 md:border-l-2 md:pb-0 md:pl-3 ${
+                className={`block border-l-2 py-2.5 pl-3 pr-2 font-[family-name:var(--font-geist-mono)] text-[13px] transition-colors md:py-1.5 ${
                   active
-                    ? "border-primary text-primary md:border-l-primary"
-                    : "text-muted-foreground hover:text-primary"
+                    ? "border-primary text-primary"
+                    : "border-transparent text-muted-foreground hover:text-primary"
                 }`}
               >
                 {c.label}

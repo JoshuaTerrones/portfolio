@@ -133,7 +133,7 @@ export function MobileMenu({ accentOverride, previewMode = false }: MobileMenuPr
           >
             <Effect accent={activeAccent} />
 
-            <div className="relative px-5 pt-2.5 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+            <div className="relative px-5 pb-4 pt-2.5">
               <div className="mx-auto mb-3 h-1 w-8 rounded-full bg-primary/30" />
 
               <nav className="flex flex-col">

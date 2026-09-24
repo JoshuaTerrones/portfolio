@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import { Fraunces, Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -33,23 +33,6 @@ export const metadata: Metadata = {
   authors: [{ name: "Joshua Terrones" }],
   creator: "Joshua Terrones",
   metadataBase: new URL("https://josht.xyz"),
-  manifest: "/manifest.json",
-  appleWebApp: {
-    capable: true,
-    title: "josht.xyz",
-    statusBarStyle: "default",
-  },
-};
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF6EF" },
-    { media: "(prefers-color-scheme: dark)", color: "#121212" },
-  ],
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 5,
-  viewportFit: "cover",
 };
 
 const accentRotationScript = `
@@ -82,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden">
+      <body className="min-h-full bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <BackgroundShapes />
           <a
@@ -92,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Saltar al contenido
           </a>
           <script dangerouslySetInnerHTML={{ __html: accentRotationScript }} />
-          <div className="relative z-10 flex min-h-full flex-col">
+          <div className="relative z-10 flex min-h-screen flex-col">
             <Header />
             <main id="main" className="flex-1">
               {children}

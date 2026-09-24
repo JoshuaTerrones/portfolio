@@ -145,7 +145,7 @@ function HeaderInner() {
 
   return (
     <>
-      <div className="sticky top-0 z-40 w-full pt-[env(safe-area-inset-top)]">
+      <div className="sticky top-0 z-40 w-full">
         <motion.div
           animate={{ opacity: scrolled ? 0 : 1 }}
           transition={{ duration: 0.25, ease: EASE }}

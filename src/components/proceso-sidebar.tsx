@@ -15,34 +15,51 @@ export function ProcesoSidebar({ chapters }: ProcesoSidebarProps) {
   const [activeId, setActiveId] = useState(chapters[0]?.id ?? "");
 
   useEffect(() => {
+    let ticking = false;
+    let currentId = "";
+
     const update = () => {
       const scrollY = window.scrollY;
       const viewportH = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
 
+      let next = currentId;
+
       if (scrollY + viewportH >= docHeight - 80) {
-        setActiveId(chapters[chapters.length - 1].id);
-        return;
+        next = chapters[chapters.length - 1].id;
+      } else {
+        const threshold = scrollY + viewportH * 0.35;
+        next = chapters[0].id;
+        for (const ch of chapters) {
+          const el = document.getElementById(ch.id);
+          if (!el) continue;
+          const top = el.getBoundingClientRect().top + scrollY;
+          if (top <= threshold) next = ch.id;
+        }
       }
 
-      const threshold = scrollY + viewportH * 0.35;
-      let current = chapters[0].id;
-      for (const ch of chapters) {
-        const el = document.getElementById(ch.id);
-        if (!el) continue;
-        const top = el.getBoundingClientRect().top + scrollY;
-        if (top <= threshold) current = ch.id;
+      if (next !== currentId) {
+        currentId = next;
+        setActiveId(next);
       }
-      setActiveId(current);
+      ticking = false;
     };
 
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update, { passive: true });
-    update();
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    const raf = requestAnimationFrame(update);
 
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, [chapters]);
 

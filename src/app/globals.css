@@ -158,3 +158,44 @@
   0%, 100% { opacity: 1; box-shadow: 0 0 0 transparent; }
   50% { opacity: 0.5; box-shadow: 0 0 12px var(--primary); }
 }
+
+/* ============================================
+   Apple-style: curvas y micro-interacciones
+   ============================================ */
+@layer base {
+  /* Elimina el flash azul del tap en mobile */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Feedback al tocar SOLO botones y links de accion (no items de listado) */
+  button:not(:disabled) {
+    transition:
+      transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 0.2s cubic-bezier(0.32, 0.72, 0, 1),
+      border-color 0.2s cubic-bezier(0.32, 0.72, 0, 1),
+      color 0.2s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  button:not(:disabled):active {
+    transform: scale(0.97);
+  }
+
+  /* Links de accion especificos — clases custom con data-attr o el menu */
+  [data-tap-feedback]:active {
+    transform: scale(0.97);
+  }
+}
+
+/* Respeta la preferencia de movimiento reducido del usuario */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

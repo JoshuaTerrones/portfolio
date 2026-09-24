@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FolderOpen, User, BookOpen, Mail, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMenu } from "@/components/menu-context";
 
 const NAV = [
   { href: "/proyectos", label: "Proyectos", icon: FolderOpen },
@@ -70,19 +71,13 @@ function Effect({ accent }: { accent: Accent }) {
 }
 
 type MobileMenuProps = {
-  open?: boolean;
-  onClose?: () => void;
   accentOverride?: Accent;
   previewMode?: boolean;
 };
 
-export function MobileMenu({
-  open = false,
-  onClose = () => {},
-  accentOverride,
-  previewMode = false,
-}: MobileMenuProps) {
+export function MobileMenu({ accentOverride, previewMode = false }: MobileMenuProps = {}) {
   const pathname = usePathname();
+  const { open, closeMenu } = useMenu();
   const [accent, setAccent] = useState<Accent>("orange");
 
   useEffect(() => {
@@ -99,8 +94,9 @@ export function MobileMenu({
 
   useEffect(() => {
     if (!open || previewMode) return;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
+    return () => { document.body.style.overflow = previous; };
   }, [open, previewMode]);
 
   const show = previewMode || open;
@@ -112,7 +108,7 @@ export function MobileMenu({
         <>
           {!previewMode && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }} onClick={onClose}
+              transition={{ duration: 0.2 }} onClick={closeMenu}
               className="fixed inset-0 z-[90] bg-foreground/5 md:hidden" />
           )}
           <motion.div
@@ -125,7 +121,7 @@ export function MobileMenu({
             dragElastic={previewMode ? 0 : { top: 0, bottom: 0.6 }}
             dragSnapToOrigin
             onDragEnd={(_, info) => {
-              if (!previewMode && info.offset.y > 80) onClose();
+              if (!previewMode && info.offset.y > 80) closeMenu();
             }}
             aria-hidden={previewMode || undefined}
             className={cn(
@@ -138,7 +134,7 @@ export function MobileMenu({
             <Effect accent={activeAccent} />
 
             <div className="relative px-5 pb-4 pt-2.5">
-              <div className="mx-auto mb-3 h-1 w-8 rounded-full bg-primary/30 transition-colors group-hover:bg-primary/50" />
+              <div className="mx-auto mb-3 h-1 w-8 rounded-full bg-primary/30" />
 
               <nav className="flex flex-col">
                 {NAV.map((item, i) => {
@@ -175,7 +171,7 @@ export function MobileMenu({
                       {previewMode ? (
                         <div className={itemClass}>{inner}</div>
                       ) : (
-                        <Link href={item.href} onClick={onClose} aria-current={active ? "page" : undefined} className={itemClass}>
+                        <Link href={item.href} onClick={closeMenu} aria-current={active ? "page" : undefined} className={itemClass}>
                           {inner}
                         </Link>
                       )}

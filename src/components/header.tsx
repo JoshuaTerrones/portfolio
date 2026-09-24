@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { Menu as MenuIcon } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { MenuProvider, useMenu } from "@/components/menu-context";
 import { MobileMenu } from "@/components/mobile-menu";
 import { CHAPTERS } from "@/lib/proceso";
 
@@ -16,12 +17,15 @@ const NAV_ITEMS = [
   { href: "/contacto", label: "Contacto" },
 ];
 
-export function Header() {
+const EASE = [0.33, 1, 0.68, 1] as const;
+const DUR = 0.4;
+
+function HeaderInner() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const { openMenu } = useMenu();
   const [scrolled, setScrolled] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
-  const [activeChapter, setActiveChapter] = useState<string>(CHAPTERS[0]?.id ?? "");
+  const [activeChapter, setActiveChapter] = useState<string>("");
   const [isMobile, setIsMobile] = useState(false);
 
   const isProceso = pathname === "/proceso";
@@ -29,23 +33,37 @@ export function Header() {
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
     const update = () => setIsMobile(mq.matches);
-    update();
     mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    const raf = requestAnimationFrame(update);
+    return () => {
+      cancelAnimationFrame(raf);
+      mq.removeEventListener("change", update);
+    };
   }, []);
 
-  /* Scroll pill con histeresis */
   useEffect(() => {
-    const ENTER = 50;
-    const EXIT = 10;
+    const ENTER = 40;
+    const EXIT = 20;
+    const LOCK_MS = 440;
     let ticking = false;
+    let wasScrolled = false;
+    let lockedUntil = 0;
+
     const update = () => {
       const y = window.scrollY;
-      setScrolled((prev) => {
-        if (!prev && y > ENTER) return true;
-        if (prev && y < EXIT) return false;
-        return prev;
-      });
+      const now = performance.now();
+      if (now < lockedUntil) {
+        ticking = false;
+        return;
+      }
+      let next = wasScrolled;
+      if (!wasScrolled && y > ENTER) next = true;
+      else if (wasScrolled && y < EXIT) next = false;
+      if (next !== wasScrolled) {
+        wasScrolled = next;
+        lockedUntil = now + LOCK_MS;
+        setScrolled(next);
+      }
       ticking = false;
     };
     const onScroll = () => {
@@ -54,47 +72,56 @@ export function Header() {
         window.requestAnimationFrame(update);
       }
     };
-    update();
+    const raf = requestAnimationFrame(update);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
-  /* Scroll spy de capitulos — solo /proceso */
   useEffect(() => {
     if (!isProceso) return;
-
+    let ticking = false;
+    let currentId = "";
     const update = () => {
       const scrollY = window.scrollY;
       const viewportH = window.innerHeight;
       const docHeight = document.documentElement.scrollHeight;
-
+      let next = currentId;
       if (scrollY + viewportH >= docHeight - 80) {
-        setActiveChapter(CHAPTERS[CHAPTERS.length - 1].id);
-        return;
+        next = CHAPTERS[CHAPTERS.length - 1].id;
+      } else {
+        const threshold = scrollY + viewportH * 0.35;
+        next = CHAPTERS[0].id;
+        for (const ch of CHAPTERS) {
+          const el = document.getElementById(ch.id);
+          if (!el) continue;
+          const top = el.getBoundingClientRect().top + scrollY;
+          if (top <= threshold) next = ch.id;
+        }
       }
-
-      const threshold = scrollY + viewportH * 0.35;
-      let current = CHAPTERS[0].id;
-      for (const ch of CHAPTERS) {
-        const el = document.getElementById(ch.id);
-        if (!el) continue;
-        const top = el.getBoundingClientRect().top + scrollY;
-        if (top <= threshold) current = ch.id;
+      if (next !== currentId) {
+        currentId = next;
+        setActiveChapter(next);
       }
-      setActiveChapter(current);
+      ticking = false;
     };
-
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update, { passive: true });
-    update();
-
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(update);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    const raf = requestAnimationFrame(update);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
+      cancelAnimationFrame(raf);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
     };
   }, [isProceso]);
-
-  useEffect(() => { setChaptersOpen(false); }, [pathname]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -114,128 +141,149 @@ export function Header() {
   };
 
   const activeChapterData = CHAPTERS.find((c) => c.id === activeChapter);
-  const showChapter = isProceso && scrolled && isMobile && !!activeChapterData;
+  const showChapter = isProceso && isMobile && !!activeChapterData;
 
   return (
     <>
-      {/* Wrapper sticky */}
-      <div className="sticky top-3 z-40 flex w-full justify-center px-4 md:px-6">
-        {/* Pill con motion layout — animación fluida entre estados */}
+      <div className="sticky top-0 z-40 w-full">
         <motion.div
-          layout
-          transition={{
-            layout: {
-              type: "spring",
-              damping: 30,
-              stiffness: 260,
-              mass: 0.8,
-            },
-            default: { duration: 0.35, ease: [0.32, 0.72, 0, 1] },
-          }}
-          className={cn(
-            "flex items-center",
-            scrolled
-              ? "gap-2 rounded-full border border-border bg-background px-4 py-2 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.15)]"
-              : "w-full max-w-[1080px] gap-0 rounded-none border-b border-border bg-transparent px-0 py-4 md:py-[18px]"
-          )}
+          animate={{ opacity: scrolled ? 0 : 1 }}
+          transition={{ duration: 0.25, ease: EASE }}
+          className="mx-auto h-px max-w-[1080px] bg-border"
+        />
+
+        <motion.div
+          layoutRoot
+          className="flex h-[72px] w-full items-center justify-center px-4 md:px-6"
         >
-          <motion.div layout="position" transition={{ duration: 0.3 }}>
+          {/* === CONTENEDOR MORPH REAL — motion layout === */}
+          <motion.div
+            layout
+            transition={{ layout: { duration: DUR, ease: EASE } }}
+            style={{ willChange: "transform" }}
+            className={cn(
+              "flex items-center overflow-hidden [contain:layout_paint] [transform:translateZ(0)]",
+              scrolled
+                ? "w-fit gap-2.5 rounded-full bg-background/95 px-4 py-2 backdrop-blur-xl shadow-[0_4px_24px_-8px_rgba(0,0,0,0.15)]"
+                : "w-full max-w-[1080px] justify-between py-4"
+            )}
+          >
+            {/* Logo — fontSize animado con Motion, misma duración */}
             <Link
               href="/"
               className="flex shrink-0 items-center font-heading font-semibold tracking-tight"
             >
-              <span
+              <motion.span
                 aria-hidden
-                className={cn(
-                  "inline-block rounded-full bg-primary transition-all duration-300",
-                  scrolled
-                    ? "mr-2 h-1.5 w-1.5"
-                    : "mr-2.5 h-2 w-2 animate-[dot-glow_2.5s_ease-in-out_infinite]"
-                )}
+                animate={{
+                  width: scrolled ? 6 : 8,
+                  height: scrolled ? 6 : 8,
+                  marginRight: scrolled ? 8 : 10,
+                }}
+                transition={{ duration: DUR, ease: EASE }}
+                className="inline-block rounded-full bg-primary"
               />
-              <span
-                className={cn(
-                  "text-foreground transition-all duration-300",
-                  scrolled ? "text-[15px]" : "text-[22px]"
-                )}
+              <motion.span
+                animate={{ fontSize: scrolled ? "15px" : "22px" }}
+                transition={{ duration: DUR, ease: EASE }}
+                className="whitespace-nowrap text-foreground"
+                style={{ lineHeight: 1 }}
               >
                 josht<span className="text-primary">.</span>xyz
-              </span>
+              </motion.span>
             </Link>
-          </motion.div>
 
-          {showChapter && activeChapterData && (
-            <motion.div
-              layout="position"
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.25, delay: 0.05 }}
-              className="flex items-center gap-2"
-            >
-              <span className="h-3 w-px bg-border" />
-              <button
-                type="button"
-                onClick={() => setChaptersOpen(!chaptersOpen)}
-                aria-label="Elegir capitulo"
-                aria-expanded={chaptersOpen}
-                className="flex min-w-0 items-baseline gap-2 px-1 transition-colors"
-              >
-                <span className="shrink-0 font-[family-name:var(--font-geist-mono)] text-[10px] uppercase tracking-wider text-muted-foreground">
-                  {activeChapterData.id.split("-")[0]}
-                </span>
-                <span className="max-w-[160px] truncate font-heading text-[13px] text-foreground sm:max-w-[200px]">
-                  {activeChapterData.title.replace(/^\d+\s*—\s*/, "")}
-                </span>
-              </button>
-            </motion.div>
-          )}
-
-          <motion.nav
-            layout="position"
-            transition={{ duration: 0.3 }}
-            className={cn(
-              "hidden items-center md:flex",
-              scrolled ? "gap-4 border-l border-border pl-3" : "ml-auto gap-[26px]"
-            )}
-          >
-            {NAV_ITEMS.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(item.href + "/");
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className={cn(
-                    "relative transition-all duration-300",
-                    scrolled ? "text-[12px]" : "text-sm",
-                    "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full",
-                    active ? "text-primary after:w-full" : "text-foreground"
-                  )}
+            {/* Capítulo activo (solo /proceso móvil + scrolled) */}
+            <AnimatePresence>
+              {showChapter && activeChapterData && scrolled && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: "auto" }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.24, ease: EASE }}
+                  className="flex shrink-0 items-center gap-2 overflow-hidden"
                 >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </motion.nav>
+                  <span className="h-3 w-px shrink-0 bg-border" />
+                  <button
+                    type="button"
+                    onClick={() => setChaptersOpen(!chaptersOpen)}
+                    aria-label="Elegir capítulo"
+                    aria-expanded={chaptersOpen}
+                    className="flex min-w-0 items-baseline gap-2"
+                  >
+                    <span className="shrink-0 font-[family-name:var(--font-geist-mono)] text-[10px] uppercase tracking-wider text-muted-foreground">
+                      {activeChapterData.id.split("-")[0]}
+                    </span>
+                    <span className="max-w-[130px] truncate font-heading text-[13px] text-foreground">
+                      {activeChapterData.title.replace(/^\d+\s*—\s*/, "")}
+                    </span>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-          <motion.button
-            layout="position"
-            transition={{ duration: 0.3 }}
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Abrir menu"
-            aria-expanded={open}
-            className={cn(
-              "flex shrink-0 items-center justify-center text-foreground transition-all duration-300 hover:text-primary md:hidden",
-              scrolled ? "border-l border-border pl-3" : "ml-auto rounded-md border border-border p-2"
-            )}
-          >
-            <MenuIcon
-              size={scrolled ? 16 : 20}
-              strokeWidth={1.75}
-              className="transition-all duration-300"
-            />
-          </motion.button>
+            {/* Nav desktop — fontSize animado con Motion */}
+            <nav
+              className={cn(
+                "hidden items-center md:flex",
+                scrolled ? "gap-4 border-l border-border pl-3" : "gap-[26px]"
+              )}
+            >
+              {NAV_ITEMS.map((item) => {
+                const active =
+                  pathname === item.href || pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "relative whitespace-nowrap transition-colors",
+                      "after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full",
+                      active ? "text-primary after:w-full" : "text-foreground"
+                    )}
+                  >
+                    <motion.span
+                      animate={{ fontSize: scrolled ? "12px" : "14px" }}
+                      transition={{ duration: DUR, ease: EASE }}
+                      className="block"
+                      style={{ lineHeight: 1 }}
+                    >
+                      {item.label}
+                    </motion.span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Hamburguesa — tamaño animado con Motion */}
+            <button
+              type="button"
+              onClick={openMenu}
+              aria-label="Abrir menú"
+              className={cn(
+                "flex shrink-0 items-center justify-center text-foreground transition-colors hover:text-primary md:hidden",
+                scrolled
+                  ? "border-l border-border pl-3"
+                  : "rounded-md border border-border p-2"
+              )}
+            >
+              <motion.span
+                animate={{
+                  width: scrolled ? 16 : 20,
+                  height: scrolled ? 16 : 20,
+                }}
+                transition={{ duration: DUR, ease: EASE }}
+                className="flex items-center justify-center"
+              >
+                <MenuIcon
+                  size={20}
+                  strokeWidth={1.75}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </motion.span>
+            </button>
+          </motion.div>
         </motion.div>
       </div>
 
@@ -244,11 +292,11 @@ export function Header() {
           <>
             <div className="fixed inset-0 z-40" onClick={() => setChaptersOpen(false)} />
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ type: "spring", damping: 24, stiffness: 320 }}
-              className="fixed left-1/2 top-[68px] z-50 w-[min(300px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-background/95 py-1.5 backdrop-blur-xl shadow-[0_8px_24px_-8px_rgba(0,0,0,0.15)]"
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -6, scale: 0.98 }}
+              transition={{ duration: 0.22, ease: EASE }}
+              className="fixed left-1/2 top-[80px] z-50 w-[min(300px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-card py-1.5 shadow-[0_8px_24px_-8px_rgba(0,0,0,0.12)]"
             >
               {CHAPTERS.map((c) => {
                 const isActive = activeChapter === c.id;
@@ -282,7 +330,15 @@ export function Header() {
         )}
       </AnimatePresence>
 
-      <MobileMenu open={open} onClose={() => setOpen(false)} />
+      <MobileMenu />
     </>
+  );
+}
+
+export function Header() {
+  return (
+    <MenuProvider>
+      <HeaderInner />
+    </MenuProvider>
   );
 }

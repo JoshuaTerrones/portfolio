@@ -6,8 +6,8 @@ type BlogArticleProps = {
   post: Post;
 };
 
-export function BlogArticle({ post }: BlogArticleProps) {
-  const { prev, next } = getAdjacentPosts(post.slug);
+export async function BlogArticle({ post }: BlogArticleProps) {
+  const { prev, next } = await getAdjacentPosts(post.slug);
 
   return (
     <article className="mx-auto max-w-[700px] pb-12 pt-6 md:pb-16 md:pt-8">

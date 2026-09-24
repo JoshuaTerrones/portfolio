@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { ProjectListItem } from "@/components/project-list-item";
 import { SectionLabel } from "@/components/section-label";
-import { PROJECTS } from "@/lib/projects";
+import type { Project } from "@/lib/projects";
 
-export function FeaturedProjects() {
-  const featured = PROJECTS.slice(0, 3);
+type FeaturedProjectsProps = {
+  projects: Project[];
+};
+
+export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
+  const featured = projects.slice(0, 3);
+
+  if (featured.length === 0) return null;
 
   return (
     <section className="py-4 md:py-6">

@@ -2,8 +2,13 @@ import { TerminalLine } from "@/components/terminal-line";
 import { MiniAbout } from "@/components/mini-about";
 import { FeaturedProjects } from "@/components/featured-projects";
 import { MiniContact } from "@/components/mini-contact";
+import { getPinnedProjects } from "@/lib/projects";
 
-export default function Home() {
+export const revalidate = 86400;
+
+export default async function Home() {
+  const projects = await getPinnedProjects();
+
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 py-8 md:px-8 md:py-12">
       <TerminalLine cmd="whoami" />
@@ -32,7 +37,7 @@ export default function Home() {
       </div>
 
       <MiniAbout />
-      <FeaturedProjects />
+      <FeaturedProjects projects={projects} />
       <MiniContact />
     </div>
   );

@@ -1,27 +1,40 @@
-"use client";
+import type { GitHubContributions } from "@/lib/github";
 
-import { useEffect, useRef } from "react";
+type ContribGridProps = {
+  contributions: GitHubContributions | null;
+};
 
-export function ContribGrid() {
-  const ref = useRef<HTMLDivElement>(null);
+const LEVEL_CLASS: Record<0 | 1 | 2 | 3 | 4, string> = {
+  0: "bg-border",
+  1: "bg-primary/30",
+  2: "bg-primary/55",
+  3: "bg-primary/80",
+  4: "bg-primary",
+};
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.innerHTML = "";
-    for (let i = 0; i < 26 * 7; i++) {
-      const c = document.createElement("div");
-      c.className = "aspect-square rounded-[2px]";
-      const r = Math.random();
-      if (r > 0.85) c.style.background = "var(--accent)";
-      else if (r > 0.65)
-        c.style.background = "color-mix(in srgb, var(--accent) 60%, var(--border))";
-      else if (r > 0.45)
-        c.style.background = "color-mix(in srgb, var(--accent) 30%, var(--border))";
-      else c.style.background = "var(--border)";
-      el.appendChild(c);
-    }
-  }, []);
+export function ContribGrid({ contributions }: ContribGridProps) {
+  if (!contributions) {
+    return (
+      <div className="mt-4 flex h-[120px] items-center justify-center font-[family-name:var(--font-geist-mono)] text-[11px] text-muted-foreground">
+        No disponible
+      </div>
+    );
+  }
 
-  return <div ref={ref} className="mt-4 grid grid-cols-[repeat(26,1fr)] gap-[3px]" />;
+  return (
+    <div
+      className="mt-4 grid gap-[3px]"
+      style={{ gridTemplateColumns: `repeat(${contributions.weeks.length}, minmax(0, 1fr))` }}
+    >
+      {contributions.weeks.flatMap((week) =>
+        week.days.map((day) => (
+          <div
+            key={day.date}
+            title={`${day.count} contribuciones el ${day.date}`}
+            className={`aspect-square rounded-[2px] ${LEVEL_CLASS[day.level]}`}
+          />
+        ))
+      )}
+    </div>
+  );
 }

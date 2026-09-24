@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ContribGrid } from "@/components/contrib-grid";
+import { getGitHubContributions } from "@/lib/github";
 import { TerminalLine } from "@/components/terminal-line";
 import { SectionLabel } from "@/components/section-label";
 
@@ -122,7 +123,11 @@ export const metadata: Metadata = {
   description: "Historia, stack técnico, formación y experiencia de Joshua Terrones.",
 };
 
-export default function SobreMiPage() {
+export const revalidate = 86400;
+
+export default async function SobreMiPage() {
+  const contributions = await getGitHubContributions();
+
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
       {/* Hero */}
@@ -179,9 +184,11 @@ export default function SobreMiPage() {
             <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-primary">
               GitHub
             </div>
-            <div className="mb-1.5 font-heading text-[36px] leading-none">000</div>
-            <div className="text-[13px] text-muted-foreground">Contribuciones últimos 6 meses</div>
-            <ContribGrid />
+            <div className="mb-1.5 font-heading text-[36px] leading-none">
+              {contributions?.total ?? 0}
+            </div>
+            <div className="text-[13px] text-muted-foreground">Contribuciones últimos 12 meses</div>
+            <ContribGrid contributions={contributions} />
           </div>
         </div>
       </section>

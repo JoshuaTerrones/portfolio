@@ -6,8 +6,8 @@ type ProjectDetailProps = {
   project: Project;
 };
 
-export function ProjectDetail({ project }: ProjectDetailProps) {
-  const { prev, next } = getAdjacentProjects(project.num);
+export async function ProjectDetail({ project }: ProjectDetailProps) {
+  const { prev, next } = await getAdjacentProjects(project.num);
 
   const meta = [
     { label: "Año", value: project.year },
@@ -25,7 +25,6 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         ← Volver a Proyectos
       </Link>
 
-      {/* Hero */}
       <div className="mb-8 grid grid-cols-1 items-start gap-6 md:mb-10 md:grid-cols-2 md:gap-12">
         <div>
           <h1 className="mb-4 font-heading text-[32px] leading-[1.05] tracking-[-0.03em] md:text-[56px]">
@@ -50,27 +49,29 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </div>
       </div>
 
-      {/* Actions */}
       <div className="mb-8 flex flex-col items-stretch gap-2.5 md:mb-10 md:flex-row md:items-center md:justify-between md:gap-4">
-        <a
-          href={project.demoUrl || "#"}
-          target={project.demoUrl && project.demoUrl !== "#" ? "_blank" : undefined}
-          rel={project.demoUrl && project.demoUrl !== "#" ? "noopener noreferrer" : undefined}
-          className="rounded-md bg-primary px-6 py-3 text-center font-[family-name:var(--font-geist-mono)] text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90"
-        >
-          Ver demo →
-        </a>
-        <a
-          href={project.repoUrl || "#"}
-          target={project.repoUrl && project.repoUrl !== "#" ? "_blank" : undefined}
-          rel={project.repoUrl && project.repoUrl !== "#" ? "noopener noreferrer" : undefined}
-          className="rounded-md border border-border px-6 py-3 text-center font-[family-name:var(--font-geist-mono)] text-[13px] font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
-        >
-          Repositorio →
-        </a>
+        {project.demoUrl && (
+          <a
+            href={project.demoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md bg-primary px-6 py-3 text-center font-[family-name:var(--font-geist-mono)] text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            Ver demo →
+          </a>
+        )}
+        {project.repoUrl && (
+          <a
+            href={project.repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-md border border-border px-6 py-3 text-center font-[family-name:var(--font-geist-mono)] text-[13px] font-medium text-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            Repositorio →
+          </a>
+        )}
       </div>
 
-      {/* Meta strip */}
       <div className="mb-8 grid grid-cols-2 gap-4 border-y border-border py-5 md:mb-10 md:grid-cols-4 md:gap-6 md:py-6">
         {meta.map((m, i) => (
           <div key={m.label} className={i % 2 === 1 ? "text-right md:text-left" : ""}>
@@ -82,7 +83,6 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         ))}
       </div>
 
-      {/* 01 Contexto */}
       <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
         <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
           01 / Contexto
@@ -95,7 +95,6 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </div>
       </div>
 
-      {/* 02 Solución */}
       <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
         <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
           02 / Solución
@@ -108,75 +107,54 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
         </div>
       </div>
 
-      {/* 03 Características */}
-      <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
-        <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
-          03 / Características
-        </div>
-        <div>
-          <h3 className="mb-4 font-heading text-[22px] leading-[1.15] md:text-[26px]">
-            Lo que <em className="italic text-primary">hace</em>.
-          </h3>
-          <ul className="space-y-1.5">
-            {project.features.map((f) => (
-              <li
-                key={f}
-                className="relative pl-5 font-heading text-[16px] font-light leading-[1.7]"
-              >
-                <span className="absolute left-1.5 font-bold text-primary">·</span>
-                {f}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      {/* 04 Capturas */}
-      <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
-        <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
-          04 / Capturas
-        </div>
-        <div>
-          <h3 className="mb-4 font-heading text-[22px] leading-[1.15] md:text-[26px]">
-            Vistas del <em className="italic text-primary">proyecto</em>.
-          </h3>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {["[captura 1]", "[captura 2]", "[captura 3]"].map((label) => (
-              <div
-                key={label}
-                className="flex aspect-[4/3] items-center justify-center rounded-lg border border-border bg-card font-[family-name:var(--font-geist-mono)] text-[11px] text-muted-foreground"
-              >
-                {label}
-              </div>
-            ))}
+      {project.features.length > 0 && (
+        <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
+          <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
+            03 / Características
+          </div>
+          <div>
+            <h3 className="mb-4 font-heading text-[22px] leading-[1.15] md:text-[26px]">
+              Lo que <em className="italic text-primary">hace</em>.
+            </h3>
+            <ul className="space-y-1.5">
+              {project.features.map((f) => (
+                <li
+                  key={f}
+                  className="relative pl-5 font-heading text-[16px] font-light leading-[1.7]"
+                >
+                  <span className="absolute left-1.5 font-bold text-primary">·</span>
+                  {f}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* 05 Retos */}
-      <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
-        <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
-          05 / Retos
+      {project.challenges.length > 0 && (
+        <div className="mb-8 grid grid-cols-1 gap-2 md:mb-10 md:grid-cols-[100px_1fr] md:gap-8">
+          <div className="pt-1 font-[family-name:var(--font-geist-mono)] text-xs text-primary">
+            04 / Retos
+          </div>
+          <div>
+            <h3 className="mb-4 font-heading text-[22px] leading-[1.15] md:text-[26px]">
+              Qué fue <em className="italic text-primary">difícil</em>.
+            </h3>
+            <ul className="space-y-1.5">
+              {project.challenges.map((c) => (
+                <li
+                  key={c}
+                  className="relative pl-5 font-heading text-[16px] font-light leading-[1.7]"
+                >
+                  <span className="absolute left-1.5 font-bold text-primary">·</span>
+                  {c}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <div>
-          <h3 className="mb-4 font-heading text-[22px] leading-[1.15] md:text-[26px]">
-            Qué fue <em className="italic text-primary">difícil</em>.
-          </h3>
-          <ul className="space-y-1.5">
-            {project.challenges.map((c) => (
-              <li
-                key={c}
-                className="relative pl-5 font-heading text-[16px] font-light leading-[1.7]"
-              >
-                <span className="absolute left-1.5 font-bold text-primary">·</span>
-                {c}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      )}
 
-      {/* Nav prev/next */}
       <div className="grid grid-cols-1 gap-4 border-t border-border pt-8 md:grid-cols-2">
         {prev && (
           <Link

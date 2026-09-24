@@ -1,3 +1,5 @@
+import { getGitHubPinnedRepos, getGitHubAllRepos, type GitHubRepo } from "@/lib/github";
+
 export type Project = {
   num: string;
   slug: string;
@@ -16,109 +18,58 @@ export type Project = {
   challenges: string[];
 };
 
-export const PROJECTS: Project[] = [
-  {
-    num: "01",
-    slug: "proyecto-01",
-    title: "Proyecto 01",
-    subtitle: "Subtítulo breve del proyecto placeholder.",
-    tags: ["tech-1", "tech-2"],
-    demoUrl: "#",
-    repoUrl: "#",
-    year: "2026",
-    role: "Full-Stack",
-    duration: "2 meses",
-    type: "Personal",
-    context:
-      "Párrafo placeholder sobre el contexto. Qué problema existía, quién lo necesitaba, por qué valía la pena construirlo.",
-    solution:
-      "Stack principal y decisiones técnicas clave. Párrafo placeholder describiendo cómo se resolvió.",
-    features: [
-      "Característica placeholder 1",
-      "Característica placeholder 2",
-      "Característica placeholder 3",
-      "Característica placeholder 4",
-    ],
-    challenges: ["Reto placeholder 1", "Reto placeholder 2", "Reto placeholder 3"],
-  },
-  {
-    num: "02",
-    slug: "proyecto-02",
-    title: "Proyecto 02",
-    subtitle: "Subtítulo breve del proyecto placeholder.",
-    tags: ["tech-1"],
-    demoUrl: "#",
-    repoUrl: "#",
-    year: "2026",
-    role: "Full-Stack",
-    duration: "1 mes",
-    type: "Personal",
-    context: "Párrafo placeholder sobre el contexto.",
-    solution: "Párrafo placeholder sobre la solución.",
-    features: ["Característica placeholder 1", "Característica placeholder 2"],
-    challenges: ["Reto placeholder 1", "Reto placeholder 2"],
-  },
-  {
-    num: "03",
-    slug: "proyecto-03",
-    title: "Proyecto 03",
-    subtitle: "Subtítulo breve del proyecto placeholder.",
-    tags: ["tech-1"],
-    demoUrl: "#",
-    repoUrl: "#",
-    year: "2026",
-    role: "Full-Stack",
-    duration: "1 mes",
-    type: "Personal",
-    context: "Párrafo placeholder sobre el contexto.",
-    solution: "Párrafo placeholder sobre la solución.",
-    features: ["Característica placeholder 1", "Característica placeholder 2"],
-    challenges: ["Reto placeholder 1", "Reto placeholder 2"],
-  },
-  {
-    num: "04",
-    slug: "proyecto-04",
-    title: "Proyecto 04",
-    subtitle: "Subtítulo breve del proyecto placeholder.",
-    tags: ["tech-1"],
-    demoUrl: "#",
-    repoUrl: "#",
-    year: "2026",
-    role: "Full-Stack",
-    duration: "1 mes",
-    type: "Personal",
-    context: "Párrafo placeholder sobre el contexto.",
-    solution: "Párrafo placeholder sobre la solución.",
-    features: ["Característica placeholder 1", "Característica placeholder 2"],
-    challenges: ["Reto placeholder 1", "Reto placeholder 2"],
-  },
-  {
-    num: "05",
-    slug: "proyecto-05",
-    title: "Proyecto 05",
-    subtitle: "Subtítulo breve del proyecto placeholder.",
-    tags: ["tech-1"],
-    demoUrl: "#",
-    repoUrl: "#",
-    year: "2026",
-    role: "Full-Stack",
-    duration: "1 mes",
-    type: "Personal",
-    context: "Párrafo placeholder sobre el contexto.",
-    solution: "Párrafo placeholder sobre la solución.",
-    features: ["Característica placeholder 1", "Característica placeholder 2"],
-    challenges: ["Reto placeholder 1", "Reto placeholder 2"],
-  },
-];
+function repoToProject(repo: GitHubRepo, index: number): Project {
+  const year = repo.pushed_at
+    ? new Date(repo.pushed_at).getFullYear().toString()
+    : new Date(repo.updated_at).getFullYear().toString();
 
-export function getProjectByNum(num: string): Project | undefined {
-  return PROJECTS.find((p) => p.num === num);
+  const tags = [
+    ...(repo.language ? [repo.language] : []),
+    ...(repo.topics || []).slice(0, 3),
+  ];
+
+  return {
+    num: String(index + 1).padStart(2, "0"),
+    slug: repo.name.toLowerCase(),
+    title: repo.name
+      .split("-")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" "),
+    subtitle: repo.description || "Sin descripción.",
+    tags,
+    demoUrl: repo.homepage || undefined,
+    repoUrl: repo.html_url,
+    year,
+    role: "Full-Stack",
+    duration: "—",
+    type: repo.stargazers_count > 0 ? "Destacado" : "Personal",
+    context: repo.description || "Proyecto personal.",
+    solution: "Desarrollado con " + (repo.language || "múltiples tecnologías") + ".",
+    features: repo.topics?.slice(0, 5) || [],
+    challenges: [],
+  };
 }
 
-export function getAdjacentProjects(num: string) {
-  const idx = PROJECTS.findIndex((p) => p.num === num);
+export async function getProjects(): Promise<Project[]> {
+  const repos = await getGitHubAllRepos();
+  return repos.map(repoToProject);
+}
+
+export async function getPinnedProjects(): Promise<Project[]> {
+  const repos = await getGitHubPinnedRepos();
+  return repos.map(repoToProject);
+}
+
+export async function getProjectByNum(num: string): Promise<Project | undefined> {
+  const projects = await getProjects();
+  return projects.find((p) => p.num === num);
+}
+
+export async function getAdjacentProjects(num: string) {
+  const projects = await getProjects();
+  const idx = projects.findIndex((p) => p.num === num);
   if (idx === -1) return { prev: undefined, next: undefined };
-  const prev = idx > 0 ? PROJECTS[idx - 1] : PROJECTS[PROJECTS.length - 1];
-  const next = idx < PROJECTS.length - 1 ? PROJECTS[idx + 1] : PROJECTS[0];
+  const prev = idx > 0 ? projects[idx - 1] : projects[projects.length - 1];
+  const next = idx < projects.length - 1 ? projects[idx + 1] : projects[0];
   return { prev, next };
 }

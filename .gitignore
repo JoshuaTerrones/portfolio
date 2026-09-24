@@ -46,3 +46,6 @@ next-env.d.ts
 # next.js auto-generated
 AGENTS.md
 CLAUDE.md
+
+.env
+.env*.local

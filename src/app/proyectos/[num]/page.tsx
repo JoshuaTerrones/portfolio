@@ -1,19 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectDetail } from "@/components/project-detail";
-import { PROJECTS, getProjectByNum } from "@/lib/projects";
+import { getProjectByNum } from "@/lib/projects";
 
 type PageProps = {
   params: Promise<{ num: string }>;
 };
 
-export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ num: p.num }));
-}
+export const revalidate = 86400;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { num } = await params;
-  const project = getProjectByNum(num);
+  const project = await getProjectByNum(num);
   if (!project) return {};
   return {
     title: `${project.title} — Joshua Terrones`,
@@ -23,7 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProyectoDetallePage({ params }: PageProps) {
   const { num } = await params;
-  const project = getProjectByNum(num);
+  const project = await getProjectByNum(num);
 
   if (!project) {
     notFound();

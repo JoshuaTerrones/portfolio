@@ -1,0 +1,20 @@
+{
+  "name": "Joshua Terrones — Desarrollador de Software",
+  "short_name": "josht.xyz",
+  "description": "Portafolio de Joshua Terrones, desarrollador backend y full-stack. Python, Django, TypeScript, Next.js.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF6EF",
+  "theme_color": "#C2410C",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

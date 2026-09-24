@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContribGrid } from "@/components/contrib-grid";
 import { getGitHubContributions } from "@/lib/github";
+import { getHackatimeStats } from "@/lib/hackatime";
 import { TerminalLine } from "@/components/terminal-line";
 import { SectionLabel } from "@/components/section-label";
 
@@ -126,7 +127,10 @@ export const metadata: Metadata = {
 export const revalidate = 86400;
 
 export default async function SobreMiPage() {
-  const contributions = await getGitHubContributions();
+  const [contributions, hackatime] = await Promise.all([
+    getGitHubContributions(),
+    getHackatimeStats(),
+  ]);
 
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
@@ -155,28 +159,33 @@ export default async function SobreMiPage() {
             <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-primary">
               Hackatime
             </div>
-            <div className="mb-1.5 font-heading text-[36px] leading-none">000h</div>
+            <div className="mb-1.5 font-heading text-[36px] leading-none">
+              {hackatime ? `${hackatime.totalHours}h` : "—"}
+            </div>
             <div className="text-[13px] text-muted-foreground">Horas codificadas este año</div>
             <div className="mt-4">
-              {[
-                { name: "TypeScript", pct: 78 },
-                { name: "Python", pct: 56 },
-                { name: "CSS", pct: 34 },
-              ].map((l) => (
+              {(hackatime?.languages ?? []).slice(0, 3).map((l) => (
                 <div
                   key={l.name}
                   className="mb-2 grid grid-cols-[90px_1fr_50px] items-center gap-2.5 font-[family-name:var(--font-geist-mono)] text-[11px]"
                 >
-                  <span>{l.name}</span>
+                  <span className="truncate">{l.name}</span>
                   <div className="h-[5px] overflow-hidden rounded-[3px] bg-border">
                     <div
                       className="h-full rounded-[3px] bg-primary"
-                      style={{ width: `${l.pct}%` }}
+                      style={{ width: `${l.percent}%` }}
                     />
                   </div>
-                  <span className="text-right text-muted-foreground">{l.pct}%</span>
+                  <span className="text-right text-muted-foreground">
+                    {Math.round(l.percent)}%
+                  </span>
                 </div>
               ))}
+              {(!hackatime || hackatime.languages.length === 0) && (
+                <div className="font-[family-name:var(--font-geist-mono)] text-[11px] text-muted-foreground">
+                  Sin datos aún
+                </div>
+              )}
             </div>
           </div>
 

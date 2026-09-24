@@ -29,6 +29,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hook-form": "^7.88.0",
+    "resend": "^6.28.1",
     "sanity": "^5.31.2",
     "shadcn": "^4.21.0",
     "styled-components": "^6.5.3",

@@ -1,0 +1,334 @@
+=== ESTRUCTURA DEL PROYECTO ===
+.
+./vitest.config.mts
+./.DS_Store
+./.env.local
+./LICENSE
+./postcss.config.mjs
+./debug_portfolio.txt
+./next-env.d.ts
+./.prettierignore
+./sanity.cli.ts
+./README.md
+./package-lock.json
+./package.json
+./sanity.config.ts
+./scripts
+./scripts/seed-real-post.mjs
+./.prettierrc
+./components.json
+./tsconfig.json
+./.env.example
+./eslint.config.mjs
+./next.config.ts
+./.idea
+./.idea/inspectionProfiles
+./.idea/inspectionProfiles/Project_Default.xml
+./.idea/codeStyles
+./.idea/codeStyles/Project.xml
+./.idea/codeStyles/codeStyleConfig.xml
+./.idea/vcs.xml
+./.idea/workspace.xml
+./.idea/modules.xml
+./.idea/prettier.xml
+./.idea/portfolio.iml
+./src
+./src/types
+./src/app
+./src/app/studio
+./src/app/studio/[[...tool]]
+./src/app/favicon.ico
+./src/app/sobre-mi
+./src/app/sobre-mi/page.tsx
+./src/app/contacto
+./src/app/contacto/page.tsx
+./src/app/proyectos
+./src/app/proyectos/[num]
+./src/app/proyectos/page.tsx
+./src/app/blog
+./src/app/blog/page.tsx
+./src/app/blog/[slug]
+./src/app/layout.tsx
+./src/app/api
+./src/app/api/contact
+./src/app/api/post-to-dev
+./src/app/api/revalidate
+./src/app/page.tsx
+./src/app/globals.css
+./src/app/proceso
+./src/app/proceso/page.tsx
+./src/app/not-found.tsx
+./src/app/template.tsx
+./src/sanity
+./src/sanity/structure.ts
+./src/sanity/schemaTypes
+./src/sanity/schemaTypes/categoryType.ts
+./src/sanity/schemaTypes/blockContentType.ts
+./src/sanity/schemaTypes/authorType.ts
+./src/sanity/schemaTypes/postType.ts
+./src/sanity/schemaTypes/index.ts
+./src/sanity/lib
+./src/sanity/lib/image.ts
+./src/sanity/lib/live.ts
+./src/sanity/lib/client.ts
+./src/sanity/env.ts
+./src/styles
+./src/components
+./src/components/mobile-menu.tsx
+./src/components/theme-provider.tsx
+./src/components/featured-projects.tsx
+./src/components/proceso-sidebar.tsx
+./src/components/blog-article.tsx
+./src/components/mini-about.tsx
+./src/components/section-label.tsx
+./src/components/footer.tsx
+./src/components/contrib-grid.tsx
+./src/components/project-list-item.tsx
+./src/components/header.tsx
+./src/components/background-shapes.tsx
+./src/components/blog-list-item.tsx
+./src/components/menu-context.tsx
+./src/components/project-detail.tsx
+./src/components/terminal-line.tsx
+./src/components/contact-form.tsx
+./src/components/mini-contact.tsx
+./src/hooks
+./src/lib
+./src/lib/projects.ts
+./src/lib/github.ts
+./src/lib/proceso.ts
+./src/lib/utils.ts
+./src/lib/posts.ts
+./src/lib/hackatime.ts
+
+
+=== PACKAGE.JSON ===
+{
+  "name": "portfolio",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "format": "prettier --write .",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "@hookform/resolvers": "^5.9.1",
+    "@sanity/icons": "^5.2.2",
+    "@sanity/image-url": "^2.1.1",
+    "@sanity/vision": "^5.31.2",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.4.0",
+    "lucide-react": "^1.47.0",
+    "motion": "^13.4.1",
+    "next": "16.3.5",
+    "next-sanity": "^13.3.4",
+    "next-themes": "^0.4.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.88.0",
+    "resend": "^6.28.1",
+    "sanity": "^5.31.2",
+    "shadcn": "^4.21.0",
+    "styled-components": "^6.5.3",
+    "tw-animate-css": "^1.4.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@vitejs/plugin-react-swc": "^4.3.3",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "eslint-config-prettier": "^10.1.8",
+    "jsdom": "^30.1.1",
+    "prettier": "^3.9.8",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite-tsconfig-paths": "^6.1.1",
+    "vitest": "^5.0.1"
+  },
+  "overrides": {
+    "adm-zip": "^0.6.0",
+    "js-yaml": "^4.1.0",
+    "uuid": "^11.1.1"
+  }
+}
+
+
+=== NEXT.CONFIG ===
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  allowedDevOrigins: [
+      "10.221.47.135","192.168.1.61"],
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "cdn.simpleicons.org" },
+    ],
+  },
+};
+
+export default nextConfig;
+
+
+=== API REVALIDATE ROUTE ===
+import { revalidatePath } from "next/cache";
+import { type NextRequest, NextResponse } from "next/server";
+import { parseBody } from "next-sanity/webhook";
+
+export async function POST(req: NextRequest) {
+  try {
+    const secret = process.env.SANITY_REVALIDATE_SECRET;
+    if (!secret) {
+      return NextResponse.json(
+        { error: "SANITY_REVALIDATE_SECRET no configurado" },
+        { status: 500 }
+      );
+    }
+
+    const { isValidSignature, body } = await parseBody<{ _type?: string }>(
+      req,
+      secret,
+      true
+    );
+
+    if (!isValidSignature) {
+      return NextResponse.json({ error: "Firma inválida" }, { status: 401 });
+    }
+
+    // Solo revalidamos si el cambio es en un post
+    if (body?._type === "post") {
+      revalidatePath("/blog");
+      revalidatePath("/blog/[slug]", "page");
+      console.log("✓ Revalidado:", body._type);
+    }
+
+    return NextResponse.json({ revalidated: true, now: Date.now() });
+  } catch (err) {
+    console.error("Revalidation error:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Error desconocido" },
+      { status: 500 }
+    );
+  }
+}
+
+
+=== LAYOUT PRINCIPAL ===
+import type { Metadata } from "next";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { ThemeProvider } from "@/components/theme-provider";
+import { BackgroundShapes } from "@/components/background-shapes";
+import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz", "SOFT", "WONK"],
+});
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Joshua Terrones — Desarrollador de Software",
+  description:
+    "Portafolio de Joshua Terrones, desarrollador backend y full-stack. Python, Django, TypeScript, Next.js, Docker y PostgreSQL.",
+  authors: [{ name: "Joshua Terrones" }],
+  creator: "Joshua Terrones",
+  metadataBase: new URL("https://josht.xyz"),
+};
+
+const accentRotationScript = `
+(function () {
+  function getISOWeek(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+  var accents = ["orange", "wine", "blue", "emerald", "violet", "rose"];
+  var week = getISOWeek(new Date());
+  var accent = accents[(week - 1) % 6];
+  document.documentElement.setAttribute("data-accent", accent);
+})();
+`;
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html
+      lang="es"
+      data-accent="orange"
+      suppressHydrationWarning
+      className={cn(
+        "h-full antialiased",
+        fraunces.variable,
+        geistSans.variable,
+        geistMono.variable,
+        "font-sans"
+      )}
+    >
+      <body className="min-h-full bg-background text-foreground">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <BackgroundShapes />
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+          >
+            Saltar al contenido
+          </a>
+          <script dangerouslySetInnerHTML={{ __html: accentRotationScript }} />
+          <div className="relative z-10 flex min-h-screen flex-col">
+            <Header />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
+      </body>
+    </html>
+  );
+}
+
+
+=== SANITY CLIENT ===
+import { createClient } from 'next-sanity'
+
+import { apiVersion, dataset, projectId } from '../env'
+
+export const client = createClient({
+  projectId,
+  dataset,
+  apiVersion,
+  useCdn: true, // Set to false if statically generating pages, using ISR or tag-based revalidation
+})

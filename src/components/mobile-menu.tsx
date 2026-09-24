@@ -8,10 +8,10 @@ import { FolderOpen, User, BookOpen, Mail, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { href: "/proyectos", label: "Proyectos", hint: "05 casos", icon: FolderOpen },
-  { href: "/sobre-mi", label: "Sobre mí", hint: "Bio + stack", icon: User },
-  { href: "/blog", label: "Blog", hint: "Devlogs", icon: BookOpen },
-  { href: "/contacto", label: "Contacto", hint: "Hablemos", icon: Mail },
+  { href: "/proyectos", label: "Proyectos", icon: FolderOpen },
+  { href: "/sobre-mi", label: "Sobre mí", icon: User },
+  { href: "/blog", label: "Blog", icon: BookOpen },
+  { href: "/contacto", label: "Contacto", icon: Mail },
 ];
 
 const spring = { type: "spring" as const, damping: 30, stiffness: 300 };
@@ -138,13 +138,7 @@ export function MobileMenu({
             <Effect accent={activeAccent} />
 
             <div className="relative px-5 pb-4 pt-2.5">
-              {/* Handle arrastrable + badge beta */}
-              <div className="mb-3 flex items-center justify-center gap-2">
-                <div className="h-1.5 w-12 rounded-full bg-primary/50" />
-                <span className="rounded-full bg-primary/15 px-1.5 py-0.5 font-[family-name:var(--font-geist-mono)] text-[9px] uppercase tracking-wider text-primary">
-                  beta · drag
-                </span>
-              </div>
+              <div className="mx-auto mb-3 h-1 w-8 rounded-full bg-primary/30 transition-colors group-hover:bg-primary/50" />
 
               <nav className="flex flex-col">
                 {NAV.map((item, i) => {
@@ -152,20 +146,17 @@ export function MobileMenu({
                   const Icon = item.icon;
                   const inner = (
                     <>
-                      <span className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary transition-colors",
-                        "group-hover:bg-primary group-hover:text-primary-foreground"
-                      )}>
-                        <Icon size={16} strokeWidth={2} />
+                      <Icon
+                        size={20}
+                        strokeWidth={1.75}
+                        className={cn(
+                          "shrink-0 text-primary/60 transition-colors group-hover:text-primary",
+                          active && "text-primary"
+                        )}
+                      />
+                      <span className={cn("flex-1 font-heading text-[19px] leading-tight", active && "text-primary")}>
+                        {item.label}
                       </span>
-                      <div className="flex-1">
-                        <div className={cn("font-heading text-[17px] leading-tight", active && "text-primary")}>
-                          {item.label}
-                        </div>
-                        <div className="font-[family-name:var(--font-geist-mono)] text-[10px] uppercase tracking-wider text-muted-foreground">
-                          {item.hint}
-                        </div>
-                      </div>
                       <ArrowRight size={16} className={cn(
                         "text-primary transition-all",
                         active ? "opacity-100" : "opacity-0 group-hover:translate-x-0.5 group-hover:opacity-100"
@@ -173,7 +164,7 @@ export function MobileMenu({
                     </>
                   );
                   const itemClass = cn(
-                    "group flex items-center gap-4 rounded-xl px-3 py-3 transition-all",
+                    "group flex items-center gap-4 rounded-xl px-3 py-3.5 transition-all",
                     !previewMode && "hover:bg-primary/10 hover:pl-5",
                     active && "bg-primary/10"
                   );

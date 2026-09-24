@@ -15,36 +15,47 @@ export function ProcesoSidebar({ chapters }: ProcesoSidebarProps) {
   const [activeId, setActiveId] = useState(chapters[0]?.id ?? "");
 
   useEffect(() => {
-    const observers: IntersectionObserver[] = [];
+    const update = () => {
+      const scrollY = window.scrollY;
+      const viewportH = window.innerHeight;
+      const docHeight = document.documentElement.scrollHeight;
 
-    chapters.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (!el) return;
+      if (scrollY + viewportH >= docHeight - 80) {
+        setActiveId(chapters[chapters.length - 1].id);
+        return;
+      }
 
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) setActiveId(id);
-        },
-        { rootMargin: "-20% 0px -70% 0px" }
-      );
+      const threshold = scrollY + viewportH * 0.35;
+      let current = chapters[0].id;
+      for (const ch of chapters) {
+        const el = document.getElementById(ch.id);
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top + scrollY;
+        if (top <= threshold) current = ch.id;
+      }
+      setActiveId(current);
+    };
 
-      observer.observe(el);
-      observers.push(observer);
-    });
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update, { passive: true });
+    update();
 
-    return () => observers.forEach((o) => o.disconnect());
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
   }, [chapters]);
 
   return (
-    <aside className="border-b border-border pb-3 md:sticky md:top-24 md:border-0 md:pb-0">
+    <aside className="hidden md:sticky md:top-24 md:block md:self-start">
       <ul className="block">
         {chapters.map((c) => {
           const active = activeId === c.id;
           return (
-            <li key={c.id} className="border-b border-border last:border-0 md:border-0">
+            <li key={c.id}>
               <a
                 href={`#${c.id}`}
-                className={`block border-l-2 py-2.5 pl-3 pr-2 font-[family-name:var(--font-geist-mono)] text-[13px] transition-colors md:py-1.5 ${
+                className={`block border-l-2 py-1.5 pl-3 font-[family-name:var(--font-geist-mono)] text-[13px] transition-colors ${
                   active
                     ? "border-primary text-primary"
                     : "border-transparent text-muted-foreground hover:text-primary"

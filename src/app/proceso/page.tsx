@@ -22,7 +22,7 @@ export default function ProcesoPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 py-5 md:grid-cols-[180px_1fr] md:gap-12 md:py-6">
+      <div className="grid grid-cols-1 items-start gap-6 py-5 md:grid-cols-[180px_1fr] md:gap-12 md:py-6">
         <ProcesoSidebar chapters={CHAPTERS} />
 
         <div>

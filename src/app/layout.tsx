@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground overflow-x-hidden">
+      <body className="min-h-full bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <BackgroundShapes />
           <a
@@ -75,7 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Saltar al contenido
           </a>
           <script dangerouslySetInnerHTML={{ __html: accentRotationScript }} />
-          <div className="relative z-10 flex min-h-full flex-col">
+          <div className="relative z-10 flex min-h-screen flex-col">
             <Header />
             <main id="main" className="flex-1">
               {children}

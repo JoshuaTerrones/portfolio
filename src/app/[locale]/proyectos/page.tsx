@@ -1,0 +1,46 @@
+import type { Metadata } from "next";
+import { tx } from "gt-next/server";
+import { TerminalLine } from "@/components/terminal-line";
+import { ProjectListItem } from "@/components/project-list-item";
+import { getProjects } from "@/lib/projects";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [title, desc] = await Promise.all([
+    tx("Proyectos — Joshua Terrones"),
+    tx("Todos los proyectos de Joshua Terrones, ordenados por relevancia."),
+  ]);
+  return { title, description: desc };
+}
+
+export const revalidate = 86400;
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function ProyectosPage({ params }: PageProps) {
+  const { locale } = await params;
+  const projects = await getProjects(locale as "es" | "en");
+  const [label1, label2, empty, pro, yectos, cmd] = await Promise.all([
+    tx("N proyectos reales desde GitHub, ordenados por relevancia."),
+    tx("proyectos reales desde GitHub, ordenados por relevancia."),
+    tx("No hay proyectos públicos."),
+    tx("Pro"),
+    tx("yectos"),
+    tx("ls proyectos/"),
+  ]);
+  const subtitle = label1.replace("N ", `${projects.length} `);
+  return (
+    <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
+      <div className="pt-6 pb-2 md:pt-8 md:pb-3">
+        <TerminalLine cmd={cmd} />
+        <h1 className="mb-5 font-heading text-[32px] leading-none tracking-[-0.03em] md:text-[80px] md:leading-[0.95]">
+          {pro}<em className="italic text-primary">{yectos}</em>
+        </h1>
+        <p className="max-w-[620px] text-[15px] leading-snug text-muted-foreground md:text-[17px]">{subtitle}</p>
+      </div>
+      <section className="pt-0 pb-6 md:pb-8">
+        {projects.length === 0 ? <p className="text-muted-foreground">{empty}</p> : (
+          projects.map((p) => <ProjectListItem key={p.num} num={p.num} title={p.title} description={p.subtitle} tags={p.tags} />)
+        )}
+      </section>
+    </div>
+  );
+}

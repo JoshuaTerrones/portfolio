@@ -4,14 +4,14 @@ import { ProjectDetail } from "@/components/project-detail";
 import { getProjectByNum } from "@/lib/projects";
 
 type PageProps = {
-  params: Promise<{ num: string }>;
+  params: Promise<{ num: string; locale: string }>;
 };
 
 export const revalidate = 86400;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { num } = await params;
-  const project = await getProjectByNum(num);
+  const { num, locale } = await params;
+  const project = await getProjectByNum(num, locale as "es" | "en");
   if (!project) return {};
   return {
     title: `${project.title} — Joshua Terrones`,
@@ -20,12 +20,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ProyectoDetallePage({ params }: PageProps) {
-  const { num } = await params;
-  const project = await getProjectByNum(num);
+  const { num, locale } = await params;
+  const project = await getProjectByNum(num, locale as "es" | "en");
 
-  if (!project) {
-    notFound();
-  }
+  if (!project) notFound();
 
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">

@@ -10,18 +10,29 @@ import { MenuProvider, useMenu } from "@/components/menu-context";
 import { MobileMenu } from "@/components/mobile-menu";
 import { CHAPTERS } from "@/lib/proceso";
 
-const NAV_ITEMS = [
-  { href: "/proyectos", label: "Proyectos" },
-  { href: "/sobre-mi", label: "Sobre mí" },
-  { href: "/blog", label: "Blog" },
-  { href: "/contacto", label: "Contacto" },
-];
+const NAV_ITEMS = {
+  es: [
+    { href: "/proyectos", label: "Proyectos" },
+    { href: "/sobre-mi", label: "Sobre mí" },
+    { href: "/blog", label: "Blog" },
+    { href: "/contacto", label: "Contacto" },
+  ],
+  en: [
+    { href: "/proyectos", label: "Projects" },
+    { href: "/sobre-mi", label: "About" },
+    { href: "/blog", label: "Blog" },
+    { href: "/contacto", label: "Contact" },
+  ],
+} as const;
 
 const EASE = [0.33, 1, 0.68, 1] as const;
 const DUR = 0.4;
 
+
 function HeaderInner() {
   const pathname = usePathname();
+  const locale = (pathname.split("/")[1] === "en" ? "en" : "es") as "es" | "en";
+  const navItems = NAV_ITEMS[locale];
   const { openMenu } = useMenu();
   const [scrolled, setScrolled] = useState(false);
   const [chaptersOpen, setChaptersOpen] = useState(false);
@@ -229,7 +240,7 @@ function HeaderInner() {
                 scrolled ? "gap-4 border-l border-border pl-3" : "gap-[26px]"
               )}
             >
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const active =
                   pathname === item.href || pathname.startsWith(item.href + "/");
                 return (

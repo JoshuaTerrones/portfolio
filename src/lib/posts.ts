@@ -1,3 +1,4 @@
+import { tx } from "gt-next/server";
 import { client } from "@/sanity/lib/client";
 
 export type PostBlock =
@@ -37,33 +38,17 @@ type SanityPost = {
 };
 
 const POSTS_QUERY = `*[_type == "post" && defined(slug.current)] | order(publishedAt desc) {
-  _id,
-  title,
-  slug,
-  excerpt,
-  publishedAt,
-  "categoryTitle": categories[0]->title
+  _id, title, slug, excerpt, publishedAt, "categoryTitle": categories[0]->title
 }`;
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0] {
-  _id,
-  title,
-  slug,
-  excerpt,
-  publishedAt,
-  "categoryTitle": categories[0]->title,
-  body[]{
-    _type,
-    style,
-    language,
-    code,
-    children[]{ _type, text }
-  }
+  _id, title, slug, excerpt, publishedAt, "categoryTitle": categories[0]->title,
+  body[]{ _type, style, language, code, children[]{ _type, text } }
 }`;
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, locale: "es" | "en"): string {
   try {
-    return new Date(iso).toLocaleDateString("es-ES", {
+    return new Date(iso).toLocaleDateString(locale === "en" ? "en-US" : "es-ES", {
       day: "numeric",
       month: "short",
       year: "numeric",
@@ -76,12 +61,11 @@ function formatDate(iso: string): string {
 function blocksToPlainText(blocks: PortableTextBlock[] | undefined): string {
   if (!Array.isArray(blocks)) return "";
   return blocks
-    .map((b) => {
-      if (b._type === "block" && Array.isArray(b.children)) {
-        return b.children.map((c) => c.text ?? "").join("");
-      }
-      return "";
-    })
+    .map((b) =>
+      b._type === "block" && Array.isArray(b.children)
+        ? b.children.map((c) => c.text ?? "").join("")
+        : ""
+    )
     .join(" ");
 }
 
@@ -110,11 +94,11 @@ function toBlocks(blocks: PortableTextBlock[] | undefined): PostBlock[] {
   return result;
 }
 
-function sanityToPost(s: SanityPost): Post {
+function sanityToPost(s: SanityPost, locale: "es" | "en"): Post {
   return {
     slug: s.slug?.current ?? "",
     category: s.categoryTitle ?? "Devlog",
-    date: formatDate(s.publishedAt),
+    date: formatDate(s.publishedAt, locale),
     title: s.title,
     excerpt: s.excerpt ?? "",
     readingTime: calcReadingTime(s.body),
@@ -122,32 +106,65 @@ function sanityToPost(s: SanityPost): Post {
   };
 }
 
-export async function getPosts(): Promise<Post[]> {
+async function translatePost(s: SanityPost, locale: "es" | "en"): Promise<SanityPost> {
+  if (locale === "es") return s;
+  return {
+    ...s,
+    title: await tx(s.title),
+    excerpt: s.excerpt ? await tx(s.excerpt) : s.excerpt,
+    categoryTitle: s.categoryTitle ? await tx(s.categoryTitle) : s.categoryTitle,
+    body: s.body
+      ? await Promise.all(
+          s.body.map(async (block) => {
+            if (block._type === "block" && Array.isArray(block.children)) {
+              return {
+                ...block,
+                children: await Promise.all(
+                  block.children.map(async (child) =>
+                    child.text ? { ...child, text: await tx(child.text) } : child
+                  )
+                ),
+              };
+            }
+            return block;
+          })
+        )
+      : s.body,
+  };
+}
+
+export async function getPosts(locale: "es" | "en" = "es"): Promise<Post[]> {
   try {
     const posts = await client.fetch<SanityPost[]>(POSTS_QUERY, {}, { next: { revalidate: 3600 } });
-    return posts.map(sanityToPost);
+    const translated = await Promise.all(posts.map((p) => translatePost(p, locale)));
+    return translated.map((p) => sanityToPost(p, locale));
   } catch (err) {
     console.error("Sanity getPosts error:", err);
     return [];
   }
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | undefined> {
+export async function getPostBySlug(
+  slug: string,
+  locale: "es" | "en" = "es"
+): Promise<Post | undefined> {
   try {
     const post = await client.fetch<SanityPost | null>(
       POST_QUERY,
       { slug },
       { next: { revalidate: 3600 } }
     );
-    return post ? sanityToPost(post) : undefined;
+    if (!post) return undefined;
+    const translated = await translatePost(post, locale);
+    return sanityToPost(translated, locale);
   } catch (err) {
     console.error("Sanity getPostBySlug error:", err);
     return undefined;
   }
 }
 
-export async function getAdjacentPosts(slug: string) {
-  const posts = await getPosts();
+export async function getAdjacentPosts(slug: string, locale: "es" | "en" = "es") {
+  const posts = await getPosts(locale);
   const idx = posts.findIndex((p) => p.slug === slug);
   if (idx === -1) return { prev: undefined, next: undefined };
   const prev = idx > 0 ? posts[idx - 1] : posts[posts.length - 1];

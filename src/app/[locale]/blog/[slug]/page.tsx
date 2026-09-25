@@ -4,14 +4,14 @@ import { BlogArticle } from "@/components/blog-article";
 import { getPostBySlug } from "@/lib/posts";
 
 type PageProps = {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 };
 
 export const revalidate = 3600;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { slug, locale } = await params;
+  const post = await getPostBySlug(slug, locale as "es" | "en");
   if (!post) return {};
   return {
     title: `${post.title} — Joshua Terrones`,
@@ -20,16 +20,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function BlogPostPage({ params }: PageProps) {
-  const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const { slug, locale } = await params;
+  const post = await getPostBySlug(slug, locale as "es" | "en");
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
-      <BlogArticle post={post} />
+      <BlogArticle post={post} locale={locale as "es" | "en"} />
     </div>
   );
 }

@@ -49,3 +49,5 @@ CLAUDE.md
 
 .env
 .env*.local
+public/_gt/
+public/_gt/

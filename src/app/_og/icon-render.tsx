@@ -1,10 +1,17 @@
 import { ImageResponse } from "next/og";
+import { FRAUNCES_ITALIC_B64 } from "./fonts/fraunces-italic";
 
-export function renderIcon(size: number) {
-  const fontSize = Math.round(size * 0.72);
+function getFontData(): ArrayBuffer {
+  const binary = atob(FRAUNCES_ITALIC_B64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+export async function renderIcon(size: number) {
+  const fontData = getFontData();
+  const fontSize = Math.round(size * 0.78);
   const dotSize = Math.round(size * 0.14);
-  const letterSpacing = Math.round(size * -0.04);
-  const padding = Math.round(size * 0.08);
 
   return new ImageResponse(
     (
@@ -16,32 +23,29 @@ export function renderIcon(size: number) {
           alignItems: "center",
           justifyContent: "center",
           background: "#0a0a0a",
-          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontFamily: "Fraunces",
           fontStyle: "italic",
           fontWeight: 700,
           color: "#faf7f2",
           fontSize,
-          letterSpacing: `${letterSpacing}px`,
-          paddingRight: padding,
-          paddingBottom: padding,
+          letterSpacing: `${-size * 0.04}px`,
+          paddingRight: size * 0.08,
         }}
       >
-        <span style={{ display: "flex", alignItems: "baseline" }}>
-          j
-          <span
-            style={{
-              color: "#C2410C",
-              fontStyle: "normal",
-              fontSize: dotSize * 3,
-              lineHeight: 1,
-              marginLeft: Math.round(size * -0.04),
-            }}
-          >
-            .
-          </span>
-        </span>
+        j<span style={{ color: "#C2410C", fontStyle: "normal", fontSize: dotSize * 3 }}>.</span>
       </div>
     ),
-    { width: size, height: size }
+    {
+      width: size,
+      height: size,
+      fonts: [
+        {
+          name: "Fraunces",
+          data: fontData,
+          style: "italic",
+          weight: 700,
+        },
+      ],
+    }
   );
 }

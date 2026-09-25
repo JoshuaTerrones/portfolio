@@ -1,5 +1,2 @@
 import { renderIcon } from "../_og/icon-render";
-
-export async function GET() {
-  return renderIcon(192);
-}
+export async function GET() { return renderIcon(192); }

@@ -18,6 +18,28 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${SITE_URL}/#organization`,
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: {
+    "@type": "ImageObject",
+    url: `${SITE_URL}/api/og`,
+    width: 1200,
+    height: 630,
+  },
+  sameAs: [SOCIAL.github, SOCIAL.linkedin],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: SOCIAL.email,
+    contactType: "customer support",
+    availableLanguage: ["Spanish", "English"],
+  },
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -59,7 +81,7 @@ export const metadata: Metadata = {
     alternateLocale: ["en_US"],
     images: [
       {
-        url: `${SITE_URL}/opengraph-image`,
+        url: `${SITE_URL}/api/og`,
         width: 1200,
         height: 630,
         alt: SITE_TITLE,
@@ -70,7 +92,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/opengraph-image`],
+    images: [`${SITE_URL}/api/og`],
   },
   robots: {
     index: true,
@@ -139,7 +161,12 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body>
-        <JsonLd data={[personSchema, websiteSchema]} />
+                <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=window.location.pathname;var l=p==="/en"||p.startsWith("/en/")?"en":"es";if(document.documentElement.lang!==l)document.documentElement.lang=l;}catch(e){}})();`,
+          }}
+        />
+        <JsonLd data={[personSchema, websiteSchema, organizationSchema]} />
         {children}
       </body>
     </html>

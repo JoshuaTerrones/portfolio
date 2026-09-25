@@ -79,20 +79,11 @@ export const metadata: Metadata = {
     url: SITE_URL,
     locale: "es_PE",
     alternateLocale: ["en_US"],
-    images: [
-      {
-        url: `${SITE_URL}/api/og`,
-        width: 1200,
-        height: 630,
-        alt: SITE_TITLE,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [`${SITE_URL}/api/og`],
   },
   robots: {
     index: true,

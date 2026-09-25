@@ -3,19 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 const LOCALES = ["es", "en"];
 const DEFAULT_LOCALE = "es";
 
-const SKIP = [
-  "api", "_next", "studio", "favicon.ico", "icon", "apple-icon",
-  "opengraph-image", "twitter-image", "manifest.webmanifest", "icon-192", "icon-512",
-  "sitemap.xml", "robots.txt", "feed.xml",
-];
-
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-
-  const shouldSkip = SKIP.some(
-    (s) => pathname === `/${s}` || pathname.startsWith(`/${s}/`) || pathname.startsWith(`/${s}.`)
-  );
-  if (shouldSkip) return NextResponse.next();
 
   const hasLocale = LOCALES.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
@@ -35,5 +24,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|studio|favicon.ico|icon|apple-icon|icon-192|icon-512|opengraph-image|twitter-image|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|studio|favicon.ico|.*\\..*).*)"],
 };

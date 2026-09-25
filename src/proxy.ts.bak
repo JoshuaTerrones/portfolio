@@ -1,22 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { createNextMiddleware } from "gt-next/middleware";
 
-const LOCALES = ["es", "en"];
-const DEFAULT_LOCALE = "es";
+const gtMiddleware = createNextMiddleware();
 
-export function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  const hasLocale = LOCALES.some(
-    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
-  );
-  if (hasLocale) return NextResponse.next();
-
-  const acceptLang = (request.headers.get("accept-language") || "").toLowerCase();
-  const preferred = LOCALES.find((l) => acceptLang.includes(l)) || DEFAULT_LOCALE;
-
-  const url = request.nextUrl.clone();
-  url.pathname = `/${preferred}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.redirect(url);
+export function proxy(request: Parameters<typeof gtMiddleware>[0]) {
+  return gtMiddleware(request);
 }
 
 export const config = {

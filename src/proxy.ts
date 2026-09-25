@@ -1,23 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createNextMiddleware } from "gt-next/middleware";
 
-const gtMiddleware = createNextMiddleware();
 const LOCALES = ["es", "en"];
 const DEFAULT_LOCALE = "es";
+
+const SKIP = [
+  "api", "_next", "studio", "favicon.ico", "icon", "apple-icon",
+  "opengraph-image", "twitter-image", "manifest.webmanifest",
+  "sitemap.xml", "robots.txt", "feed.xml",
+];
 
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  const shouldSkip = SKIP.some(
+    (s) => pathname === `/${s}` || pathname.startsWith(`/${s}/`) || pathname.startsWith(`/${s}.`)
+  );
+  if (shouldSkip) return NextResponse.next();
+
   const hasLocale = LOCALES.some(
     (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`)
   );
+  if (hasLocale) return NextResponse.next();
 
-  if (hasLocale) {
-    // Pasa por gt-next para que tx() reciba el locale
-    return gtMiddleware(request);
-  }
-
-  // Sin locale: redirige
   const accept = (request.headers.get("accept-language") || "").toLowerCase();
   const preferred =
     LOCALES.find((l) => {
@@ -31,5 +35,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|studio|favicon.ico|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|studio|favicon.ico|icon|apple-icon|opengraph-image|twitter-image|.*\\..*).*)"],
 };

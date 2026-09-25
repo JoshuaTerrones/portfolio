@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 export const size = { width: 64, height: 64 };
 export const contentType = "image/png";
 
-export default function Icon() {
+export default async function Icon() {
   return new ImageResponse(
     (
       <div
@@ -14,14 +14,17 @@ export default function Icon() {
           alignItems: "center",
           justifyContent: "center",
           background: "#0a0a0a",
-          fontFamily: "serif",
-          fontSize: 44,
-          fontWeight: 600,
+          fontFamily: "Georgia, 'Times New Roman', serif",
+          fontStyle: "italic",
+          fontWeight: 500,
           color: "#faf7f2",
-          letterSpacing: "-2px",
+          fontSize: 48,
+          letterSpacing: "-3px",
+          paddingRight: "4px",
+          paddingBottom: "4px",
         }}
       >
-        j<span style={{ color: "#C2410C" }}>.</span>
+        j<span style={{ color: "#C2410C", fontStyle: "normal" }}>.</span>
       </div>
     ),
     { ...size }

@@ -271,12 +271,13 @@ export default async function SobreMiPage() {
       </section>
 
       <div className="flex justify-center py-6 md:justify-start">
-        <button
-          type="button"
+        <a
+          href="/Joshua%20Terrones%20CV.pdf"
+          download="Joshua%20Terrones%20CV.pdf"
           className="rounded-md border border-primary px-6 py-3 font-[family-name:var(--font-geist-mono)] text-[13px] text-primary transition-colors hover:bg-primary hover:text-background"
         >
           Descargar CV (PDF) →
-        </button>
+        </a>
       </div>
     </div>
   );

@@ -61,5 +61,13 @@
     "adm-zip": "^0.6.0",
     "js-yaml": "^4.1.0",
     "uuid": "^11.1.1"
+  },
+  "allowScripts": {
+    "@swc/core@1.16.2": true,
+    "esbuild@0.28.2": true,
+    "esbuild@0.27.7": true,
+    "fsevents@2.3.3": true,
+    "unrs-resolver@1.12.2": true,
+    "tree-sitter-python@0.25.0": true
   }
 }

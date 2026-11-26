@@ -51,3 +51,9 @@ CLAUDE.md
 .env*.local
 public/_gt/
 public/_gt/
+
+# basura
+.idea/
+debug_*.txt
+*.bak*
+

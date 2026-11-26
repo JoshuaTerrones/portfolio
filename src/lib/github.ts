@@ -295,3 +295,82 @@ export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
       return new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();
     });
 }
+
+export type GitHubStats = {
+  commits: number;
+  issues: number;
+  pullRequests: number;
+  codeReviews: number;
+  percentages: {
+    commits: number;
+    issues: number;
+    pullRequests: number;
+    codeReviews: number;
+  };
+};
+
+const STATS_QUERY = `
+  query GetGitHubStats(
+    $username: String!
+    $from: DateTime!
+    $to: DateTime!
+  ) {
+    user(login: $username) {
+      contributionsCollection(from: $from, to: $to) {
+        totalCommitContributions
+        totalIssueContributions
+        totalPullRequestContributions
+        totalPullRequestReviewContributions
+      }
+    }
+  }
+`;
+
+export async function getGitHubStats(): Promise<GitHubStats | null> {
+  const { username } = await getGitHubEnv();
+
+  const to = new Date();
+  const from = new Date(to);
+  from.setFullYear(from.getFullYear() - 1);
+
+  const data = await graphqlFetch<{
+    user: {
+      contributionsCollection: {
+        totalCommitContributions: number;
+        totalIssueContributions: number;
+        totalPullRequestContributions: number;
+        totalPullRequestReviewContributions: number;
+      };
+    };
+  }>(STATS_QUERY, {
+    username,
+    from: from.toISOString(),
+    to: to.toISOString(),
+  });
+
+  if (!data?.user?.contributionsCollection) return null;
+
+  const collection = data.user.contributionsCollection;
+
+  const commits = collection.totalCommitContributions;
+  const issues = collection.totalIssueContributions;
+  const pullRequests = collection.totalPullRequestContributions;
+  const codeReviews = collection.totalPullRequestReviewContributions;
+
+  const total = commits + issues + pullRequests + codeReviews;
+
+  const percentage = (value: number) => (total > 0 ? Math.round((value / total) * 100) : 0);
+
+  return {
+    commits,
+    issues,
+    pullRequests,
+    codeReviews,
+    percentages: {
+      commits: percentage(commits),
+      issues: percentage(issues),
+      pullRequests: percentage(pullRequests),
+      codeReviews: percentage(codeReviews),
+    },
+  };
+}

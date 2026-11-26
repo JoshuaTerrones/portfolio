@@ -4,14 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { FolderOpen, User, BookOpen, Mail, ArrowRight } from "lucide-react";
+import { FolderOpen, User, Mail, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMenu } from "@/components/menu-context";
 
 const NAV = [
   { href: "/proyectos", label: "Proyectos", icon: FolderOpen },
   { href: "/sobre-mi", label: "Sobre mí", icon: User },
-  { href: "/blog", label: "Blog", icon: BookOpen },
   { href: "/contacto", label: "Contacto", icon: Mail },
 ];
 

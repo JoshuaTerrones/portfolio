@@ -28,6 +28,7 @@ export type GitHubRepo = {
   forks_count: number;
   updated_at: string;
   pushed_at: string;
+  created_at: string;
   fork: boolean;
   archived: boolean;
 };
@@ -151,6 +152,7 @@ export async function getGitHubPinnedRepos(): Promise<GitHubRepo[]> {
     forks_count: n.forkCount,
     updated_at: n.updatedAt,
     pushed_at: n.pushedAt,
+    created_at: n.updatedAt,
     fork: n.isFork,
     archived: n.isArchived,
   }));
@@ -268,7 +270,7 @@ export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
   }
 
   const res = await fetch(
-    `https://api.github.com/users/${username}/repos?per_page=100&sort=updated&direction=desc`,
+    `https://api.github.com/users/${username}/repos?per_page=100&sort=created&direction=desc`,
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -286,16 +288,15 @@ export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
   }
 
   const repos: GitHubRepo[] = await res.json();
+
   return repos
-    .filter((r) => !r.fork && !r.archived)
-    .sort((a, b) => {
-      if (b.stargazers_count !== a.stargazers_count) {
-        return b.stargazers_count - a.stargazers_count;
-      }
-      return new Date(b.pushed_at).getTime() - new Date(a.pushed_at).getTime();
-    });
+    .filter((r) => !r.fork && !r.archived && r.name.toLowerCase() !== username.toLowerCase())
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
+// ==========================================
+// RESTAURADO: FUNCIÓN DE ESTADÍSTICAS
+// ==========================================
 export type GitHubStats = {
   commits: number;
   issues: number;

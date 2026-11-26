@@ -4,10 +4,10 @@ export function MiniContact() {
   return (
     <section className="border-t border-border py-8 md:py-10">
       <h2 className="mb-3 font-heading text-[24px] md:text-[28px]">
-        ¿Tienes un proyecto en mente?
+        ¿Buscas un desarrollador para tu equipo?
       </h2>
       <p className="mb-5 max-w-[520px] text-[15px] leading-relaxed text-muted-foreground">
-        Escríbeme y lo hablamos. Sin compromiso, sin formularios eternos.
+        Escríbeme y hablemos sobre cómo puedo aportar a tu equipo.
       </p>
       <Link
         href="/contacto"

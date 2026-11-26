@@ -20,9 +20,6 @@ export default async function ProyectosPage() {
         <h1 className="mb-5 font-heading text-[32px] leading-none tracking-[-0.03em] md:text-[80px] md:leading-[0.95]">
           Pro<em className="italic text-primary">yectos</em>
         </h1>
-        <p className="max-w-[620px] text-[15px] leading-snug text-muted-foreground md:text-[17px]">
-          {projects.length} proyectos reales desde GitHub, ordenados por relevancia.
-        </p>
       </div>
       <section className="pt-0 pb-6 md:pb-8">
         {projects.length === 0 ? (

@@ -4,7 +4,7 @@ import { SITE_NAME, SITE_DESCRIPTION } from "@/config/site";
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: SITE_NAME,
-    short_name: "josht.xyz",
+    short_name: "joshte.dev",
     description: SITE_DESCRIPTION,
     start_url: "/",
     display: "standalone",

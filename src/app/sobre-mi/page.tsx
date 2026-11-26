@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ContribGrid } from "@/components/contrib-grid";
-import { getGitHubContributions } from "@/lib/github";
-import { getHackatimeStats } from "@/lib/hackatime";
+import { getGitHubContributions, getGitHubStats } from "@/lib/github";
 import { TerminalLine } from "@/components/terminal-line";
 import { SectionLabel } from "@/components/section-label";
 
@@ -19,15 +18,15 @@ const AREAS = [
   },
   {
     title: "Full-Stack",
-    desc: "Aplicaciones web completas con Next.js + Django. Conexión de frontend y backend end-to-end.",
+    desc: "Aplicaciones web completas con Next.js + Django. Conexión de frontend y backend.",
   },
   {
     title: "Infraestructura",
-    desc: "Docker, CI/CD con GitHub Actions, deploy en Vercel y configuraciones cloud.",
+    desc: "Docker, automatización de despliegues con GitHub Actions, deploy en Vercel y configuraciones cloud.",
   },
   {
     title: "Integraciones",
-    desc: "Consumo y construcción de APIs externas. Formación complementaria en redes y seguridad.",
+    desc: "Consumo y construcción de APIs externas. Integración de servicios de terceros y automatización de flujos.",
   },
 ];
 
@@ -37,14 +36,14 @@ const EXPERIENCE = [
     year: "2024",
     title: "Criterio Arquitectónico — Portafolio Web",
     stack: "HTML · CSS · JavaScript · Vercel",
-    desc: "Diseñé y desarrollé la identidad digital de un arquitecto independiente. Decisión técnica: JS vanilla para velocidad de carga con contenido visual pesado.",
+    desc: "Diseñé y desarrollé la identidad digital de un arquitecto independiente. Usé JavaScript vanilla en lugar de frameworks para garantizar velocidad de carga con contenido visual pesado.",
   },
   {
     company: "Freelance",
     year: "2023",
     title: "Mister Hood's — Sitio web empresarial",
     stack: "HTML · CSS · Hostinger",
-    desc: "Proyecto end-to-end: requerimientos, diseño, desarrollo, deploy y entrega. Único responsable técnico.",
+    desc: "Gestioné el proyecto desde los requerimientos iniciales hasta el diseño, desarrollo y despliegue en Hostinger.",
   },
 ];
 
@@ -52,8 +51,8 @@ const EDUCATION = [
   {
     company: "UTP",
     year: "2021 — 2026",
-    title: "Ingeniería de Sistemas e Informática",
-    desc: "Formación complementaria en redes, seguridad informática, gestión de data centers, sistemas distribuidos e integración cloud (GCP).",
+    title: "Ingeniería de Sistemas e Informática (Egresado)",
+    desc: "",
   },
   {
     company: "Británico",
@@ -121,10 +120,8 @@ const STACK = [
 ];
 
 export default async function SobreMiPage() {
-  const [contributions, hackatime] = await Promise.all([
-    getGitHubContributions(),
-    getHackatimeStats(),
-  ]);
+  // Ahora traemos las contribuciones y las estadísticas de GitHub
+  const [contributions, stats] = await Promise.all([getGitHubContributions(), getGitHubStats()]);
 
   return (
     <div className="mx-auto w-full max-w-[1080px] px-6 md:px-8">
@@ -134,44 +131,49 @@ export default async function SobreMiPage() {
           Sobre <em className="italic text-primary">mí</em>.
         </h1>
         <p className="max-w-[760px] font-heading text-[17px] font-light leading-[1.5] md:text-[20px]">
-          Hola, soy Joshua. Construyo software de principio a fin, desde el modelo de datos hasta el
-          deploy.{" "}
-          <strong className="font-normal text-foreground">
-            Elijo la tecnología según el problema
-          </strong>
-          , no al revés.
+          Ingeniero de Sistemas egresado de la UTP. Construyo aplicaciones web completas, desde el
+          modelado de bases de datos y las APIs con Django, hasta las interfaces con Next.js. Me
+          enfoco en código mantenible y despliegues automatizados.
         </p>
       </div>
 
       <section className="py-5 md:py-6">
         <SectionLabel>Actividad reciente</SectionLabel>
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          {/* TARJETA NUEVA: GITHUB STATS (Reemplaza a Hackatime) */}
           <div className="rounded-xl border border-border bg-card p-[22px]">
             <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-primary">
-              Hackatime
+              GitHub Stats
             </div>
+
+            {/* Dato principal */}
             <div className="mb-1.5 font-heading text-[36px] leading-none">
-              {hackatime ? `${hackatime.totalHours}h` : "—"}
+              {stats ? stats.commits : 0}
             </div>
-            <div className="text-[13px] text-muted-foreground">Horas codificadas este año</div>
-            <div className="mt-4">
-              {(hackatime?.languages ?? []).slice(0, 3).map((l) => (
-                <div
-                  key={l.name}
-                  className="mb-2 grid grid-cols-[90px_1fr_50px] items-center gap-2.5 font-[family-name:var(--font-geist-mono)] text-[11px]"
-                >
-                  <span className="truncate">{l.name}</span>
-                  <div className="h-[5px] overflow-hidden rounded-[3px] bg-border">
-                    <div
-                      className="h-full rounded-[3px] bg-primary"
-                      style={{ width: `${l.percent}%` }}
-                    />
-                  </div>
-                  <span className="text-right text-muted-foreground">{Math.round(l.percent)}%</span>
-                </div>
-              ))}
+            <div className="text-[13px] text-muted-foreground mb-5">Commits este año</div>
+
+            {/* Datos secundarios en una grilla de 3 columnas que ocupa todo el ancho */}
+            <div className="grid grid-cols-3 gap-2 font-[family-name:var(--font-geist-mono)] text-[11px] text-muted-foreground border-t border-border/50 pt-4">
+              <div>
+                <span className="block text-foreground text-[16px] mb-1">
+                  {stats?.pullRequests || 0}
+                </span>
+                Pull Requests
+              </div>
+              <div>
+                <span className="block text-foreground text-[16px] mb-1">{stats?.issues || 0}</span>
+                Issues
+              </div>
+              <div>
+                <span className="block text-foreground text-[16px] mb-1">
+                  {stats?.codeReviews || 0}
+                </span>
+                Code Reviews
+              </div>
             </div>
           </div>
+
+          {/* TARJETA EXISTENTE: CONTRIBUCIONES */}
           <div className="rounded-xl border border-border bg-card p-[22px]">
             <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-[11px] uppercase tracking-[0.1em] text-primary">
               GitHub
@@ -232,7 +234,7 @@ export default async function SobreMiPage() {
             </div>
             <div>
               <h3 className="mb-1.5 font-heading text-[20px]">{e.title}</h3>
-              <p className="text-sm leading-[1.6] text-muted-foreground">{e.desc}</p>
+              {e.desc && <p className="text-sm leading-[1.6] text-muted-foreground">{e.desc}</p>}
             </div>
           </div>
         ))}

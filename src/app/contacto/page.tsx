@@ -3,7 +3,7 @@ import { TerminalLine } from "@/components/terminal-line";
 import { ContactForm } from "@/components/contact-form";
 
 const INFO = [
-  { label: "Email", value: "hola@josht.xyz", href: "mailto:hola@josht.xyz" },
+  { label: "Email", value: "terronesjoshua@icloud.com", href: "mailto:terronesjoshua@icloud.com" },
   { label: "GitHub", value: "github/JoshuaTerrones", href: "https://github.com/JoshuaTerrones" },
   {
     label: "LinkedIn",
@@ -14,7 +14,7 @@ const INFO = [
 
 export const metadata: Metadata = {
   title: "Contacto — Joshua Terrones",
-  description: "Escríbeme para hablar de un proyecto, una oferta o simplemente saludar.",
+  description: "Escríbeme y hablemos sobre cómo puedo aportar a tu equipo.",
 };
 
 export default function ContactoPage() {
@@ -26,7 +26,7 @@ export default function ContactoPage() {
           Hable<em className="italic text-primary">mos</em>.
         </h1>
         <p className="max-w-[620px] text-[15px] leading-snug text-muted-foreground md:text-[17px]">
-          Si quieres hablar de un proyecto, una oferta o simplemente saludar.
+          Escríbeme y hablemos sobre cómo puedo aportar a tu equipo.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-8 py-6 md:grid-cols-2 md:gap-12 md:py-6">

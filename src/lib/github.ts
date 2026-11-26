@@ -21,11 +21,7 @@ export type GitHubRepo = {
 export type GitHubContributions = {
   total: number;
   weeks: Array<{
-    days: Array<{
-      date: string;
-      count: number;
-      level: 0 | 1 | 2 | 3 | 4;
-    }>;
+    days: Array<{ date: string; count: number; level: 0 | 1 | 2 | 3 | 4 }>;
   }>;
 };
 
@@ -38,9 +34,13 @@ export type GitHubProfile = {
   bio: string | null;
 };
 
-async function graphqlFetch<T>(query: string, variables: Record<string, unknown>): Promise<T> {
+async function graphqlFetch<T>(
+  query: string,
+  variables: Record<string, unknown>
+): Promise<T | null> {
   if (!GITHUB_TOKEN) {
-    throw new Error("GITHUB_TOKEN no está configurado en .env.local");
+    console.warn("[github] GITHUB_TOKEN no configurado — devolviendo vacío.");
+    return null;
   }
 
   const res = await fetch("https://api.github.com/graphql", {
@@ -54,12 +54,16 @@ async function graphqlFetch<T>(query: string, variables: Record<string, unknown>
   });
 
   if (!res.ok) {
-    throw new Error(`GitHub GraphQL: ${res.status} ${res.statusText}`);
+    console.error(`[github] GraphQL: ${res.status} ${res.statusText}`);
+    return null;
   }
 
   const json = await res.json();
   if (json.errors && json.errors.length > 0) {
-    throw new Error(`GraphQL errors: ${json.errors.map((e: { message: string }) => e.message).join(", ")}`);
+    console.error(
+      `[github] GraphQL errors: ${json.errors.map((e: { message: string }) => e.message).join(", ")}`
+    );
+    return null;
   }
   return json.data as T;
 }
@@ -115,6 +119,7 @@ export async function getGitHubPinnedRepos(): Promise<GitHubRepo[]> {
     PINNED_QUERY,
     { username: GITHUB_USERNAME }
   );
+  if (!data) return [];
 
   return (data.user?.pinnedItems?.nodes ?? []).map((n) => ({
     id: n.databaseId,
@@ -154,11 +159,7 @@ const CONTRIBUTIONS_QUERY = `
 `;
 
 type ContributionLevel =
-  | "NONE"
-  | "FIRST_QUARTILE"
-  | "SECOND_QUARTILE"
-  | "THIRD_QUARTILE"
-  | "FOURTH_QUARTILE";
+  "NONE" | "FIRST_QUARTILE" | "SECOND_QUARTILE" | "THIRD_QUARTILE" | "FOURTH_QUARTILE";
 
 const LEVEL_MAP: Record<ContributionLevel, 0 | 1 | 2 | 3 | 4> = {
   NONE: 0,
@@ -169,40 +170,37 @@ const LEVEL_MAP: Record<ContributionLevel, 0 | 1 | 2 | 3 | 4> = {
 };
 
 export async function getGitHubContributions(): Promise<GitHubContributions | null> {
-  try {
-    const data = await graphqlFetch<{
-      user: {
-        contributionsCollection: {
-          contributionCalendar: {
-            totalContributions: number;
-            weeks: Array<{
-              contributionDays: Array<{
-                date: string;
-                contributionCount: number;
-                contributionLevel: ContributionLevel;
-              }>;
+  const data = await graphqlFetch<{
+    user: {
+      contributionsCollection: {
+        contributionCalendar: {
+          totalContributions: number;
+          weeks: Array<{
+            contributionDays: Array<{
+              date: string;
+              contributionCount: number;
+              contributionLevel: ContributionLevel;
             }>;
-          };
+          }>;
         };
       };
-    }>(CONTRIBUTIONS_QUERY, { username: GITHUB_USERNAME });
-
-    const calendar = data.user?.contributionsCollection?.contributionCalendar;
-    if (!calendar) return null;
-
-    return {
-      total: calendar.totalContributions,
-      weeks: calendar.weeks.map((w) => ({
-        days: w.contributionDays.map((d) => ({
-          date: d.date,
-          count: d.contributionCount,
-          level: LEVEL_MAP[d.contributionLevel],
-        })),
-      })),
     };
-  } catch {
-    return null;
-  }
+  }>(CONTRIBUTIONS_QUERY, { username: GITHUB_USERNAME });
+
+  if (!data) return null;
+  const calendar = data.user?.contributionsCollection?.contributionCalendar;
+  if (!calendar) return null;
+
+  return {
+    total: calendar.totalContributions,
+    weeks: calendar.weeks.map((w) => ({
+      days: w.contributionDays.map((d) => ({
+        date: d.date,
+        count: d.contributionCount,
+        level: LEVEL_MAP[d.contributionLevel],
+      })),
+    })),
+  };
 }
 
 const PROFILE_QUERY = `
@@ -219,37 +217,33 @@ const PROFILE_QUERY = `
 `;
 
 export async function getGitHubProfile(): Promise<GitHubProfile | null> {
-  try {
-    const data = await graphqlFetch<{
-      user: {
-        followers: { totalCount: number };
-        following: { totalCount: number };
-        repositories: { totalCount: number };
-        createdAt: string;
-        avatarUrl: string;
-        bio: string | null;
-      };
-    }>(PROFILE_QUERY, { username: GITHUB_USERNAME });
-
-    return {
-      followers: data.user.followers.totalCount,
-      following: data.user.following.totalCount,
-      publicRepos: data.user.repositories.totalCount,
-      createdAt: data.user.createdAt,
-      avatarUrl: data.user.avatarUrl,
-      bio: data.user.bio,
+  const data = await graphqlFetch<{
+    user: {
+      followers: { totalCount: number };
+      following: { totalCount: number };
+      repositories: { totalCount: number };
+      createdAt: string;
+      avatarUrl: string;
+      bio: string | null;
     };
-  } catch {
-    return null;
-  }
+  }>(PROFILE_QUERY, { username: GITHUB_USERNAME });
+
+  if (!data) return null;
+
+  return {
+    followers: data.user.followers.totalCount,
+    following: data.user.following.totalCount,
+    publicRepos: data.user.repositories.totalCount,
+    createdAt: data.user.createdAt,
+    avatarUrl: data.user.avatarUrl,
+    bio: data.user.bio,
+  };
 }
 
-/* ================================
-   TODOS los repos públicos (REST)
-   ================================ */
 export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
   if (!GITHUB_TOKEN) {
-    throw new Error("GITHUB_TOKEN no está configurado en .env.local");
+    console.warn("[github] GITHUB_TOKEN no configurado — sin repos.");
+    return [];
   }
 
   const res = await fetch(
@@ -265,11 +259,11 @@ export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
   );
 
   if (!res.ok) {
-    throw new Error(`GitHub REST: ${res.status} ${res.statusText}`);
+    console.error(`[github] REST: ${res.status} ${res.statusText}`);
+    return [];
   }
 
   const repos: GitHubRepo[] = await res.json();
-
   return repos
     .filter((r) => !r.fork && !r.archived)
     .sort((a, b) => {

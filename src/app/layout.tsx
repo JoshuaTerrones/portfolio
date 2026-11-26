@@ -1,13 +1,40 @@
 import type { Metadata, Viewport } from "next";
+import { Fraunces, Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { JsonLd } from "@/components/JsonLd";
-import {
-  SITE_URL,
-  SITE_NAME,
-  SITE_TITLE,
-  SITE_DESCRIPTION,
-  SOCIAL,
-} from "@/config/site";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
+import { ThemeProvider } from "@/components/theme-provider";
+import { BackgroundShapes } from "@/components/background-shapes";
+import { cn } from "@/lib/utils";
+import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SOCIAL } from "@/config/site";
 import "./globals.css";
+
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  axes: ["opsz", "SOFT", "WONK"],
+});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+
+const accentRotationScript = `
+(function () {
+  function getISOWeek(d) {
+    var date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var dayNum = date.getUTCDay() || 7;
+    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+    var yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  }
+  var accents = ["orange", "wine", "blue", "emerald", "violet", "rose"];
+  var week = getISOWeek(new Date());
+  var accent = accents[(week - 1) % 6];
+  document.documentElement.setAttribute("data-accent", accent);
+})();
+`;
 
 export const viewport: Viewport = {
   themeColor: [
@@ -17,7 +44,6 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
-
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -36,16 +62,13 @@ const organizationSchema = {
     "@type": "ContactPoint",
     email: SOCIAL.email,
     contactType: "customer support",
-    availableLanguage: ["Spanish", "English"],
+    availableLanguage: ["Spanish"],
   },
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: {
-    default: SITE_TITLE,
-    template: `%s`,
-  },
+  title: { default: SITE_TITLE, template: `%s` },
   description: SITE_DESCRIPTION,
   keywords: [
     "Joshua Terrones",
@@ -57,20 +80,12 @@ export const metadata: Metadata = {
     "TypeScript",
     "Docker",
     "PostgreSQL",
-    "Sanity CMS",
     "Lima Perú",
   ],
   authors: [{ name: SITE_NAME, url: SITE_URL }],
   creator: SITE_NAME,
   publisher: SITE_NAME,
-  alternates: {
-    canonical: SITE_URL,
-    languages: {
-      es: `${SITE_URL}/es`,
-      en: `${SITE_URL}/en`,
-      "x-default": `${SITE_URL}/es`,
-    },
-  },
+  alternates: { canonical: SITE_URL },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
@@ -78,7 +93,6 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     url: SITE_URL,
     locale: "es_PE",
-    alternateLocale: ["en_US"],
   },
   twitter: {
     card: "summary_large_image",
@@ -120,7 +134,6 @@ const personSchema = {
     "React",
     "Docker",
     "PostgreSQL",
-    "Sanity CMS",
     "REST APIs",
     "CI/CD",
   ],
@@ -141,24 +154,37 @@ const websiteSchema = {
   name: SITE_NAME,
   description: SITE_DESCRIPTION,
   publisher: { "@id": `${SITE_URL}/#person` },
-  inLanguage: ["es", "en"],
+  inLanguage: "es",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html
+      lang="es"
+      suppressHydrationWarning
+      className={cn(fraunces.variable, geistSans.variable, geistMono.variable, "font-sans")}
+    >
       <body>
-                <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var p=window.location.pathname;var l=p==="/en"||p.startsWith("/en/")?"en":"es";if(document.documentElement.lang!==l)document.documentElement.lang=l;}catch(e){}})();`,
-          }}
-        />
         <JsonLd data={[personSchema, websiteSchema, organizationSchema]} />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <BackgroundShapes />
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+          >
+            Saltar al contenido
+          </a>
+          <script dangerouslySetInnerHTML={{ __html: accentRotationScript }} />
+          <div className="relative z-10 flex min-h-screen flex-col">
+            <Header />
+            <main id="main" className="flex-1">
+              {children}
+            </main>
+            <Footer />
+          </div>
+        </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

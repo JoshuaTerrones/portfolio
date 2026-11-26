@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withGTConfig } from "gt-next/config";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["10.221.47.135", "192.168.1.61"],
@@ -8,4 +7,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withGTConfig(nextConfig);
+export default nextConfig;

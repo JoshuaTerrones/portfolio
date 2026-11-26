@@ -62,3 +62,8 @@ debug_*.txt
 .idea/
 debug_*.txt
 *.bak*
+
+# basura
+.idea/
+debug_*.txt
+*.bak*

@@ -1,16 +1,20 @@
 import Link from "next/link";
-import { tx } from "gt-next/server";
 
-export async function MiniContact() {
-  const [a, b, c] = await Promise.all([
-    tx("¿Tienes un proyecto en mente?"), tx("Hablemos."), tx("Escríbeme →"),
-  ]);
+export function MiniContact() {
   return (
-    <section className="flex flex-col items-center justify-between gap-3 py-3 text-center md:flex-row md:items-center md:gap-5 md:text-left">
-      <p className="max-w-[500px] font-heading text-[18px] leading-tight md:text-[22px]">
-        {a} <em className="italic text-primary">{b}</em>
+    <section className="border-t border-border py-8 md:py-10">
+      <h2 className="mb-3 font-heading text-[24px] md:text-[28px]">
+        ¿Tienes un proyecto en mente?
+      </h2>
+      <p className="mb-5 max-w-[520px] text-[15px] leading-relaxed text-muted-foreground">
+        Escríbeme y lo hablamos. Sin compromiso, sin formularios eternos.
       </p>
-      <Link href="/contacto" className="whitespace-nowrap rounded-md border border-primary px-5 py-2.5 font-[family-name:var(--font-geist-mono)] text-[13px] text-primary transition-colors hover:bg-primary hover:text-background">{c}</Link>
+      <Link
+        href="/contacto"
+        className="inline-block rounded-md bg-primary px-6 py-3 font-[family-name:var(--font-geist-mono)] text-[13px] text-primary-foreground transition-opacity hover:opacity-90"
+      >
+        Hablemos →
+      </Link>
     </section>
   );
 }

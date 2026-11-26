@@ -63,6 +63,7 @@ async function graphqlFetch<T>(
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      "User-Agent": "JoshuaTerrones-Portfolio",
     },
     body: JSON.stringify({ query, variables }),
     next: { revalidate: 86400 },
@@ -273,6 +274,7 @@ export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
         Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "JoshuaTerrones-Portfolio",
       },
       next: { revalidate: 86400 },
     }

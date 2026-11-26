@@ -190,7 +190,7 @@ function HeaderInner() {
                 className="whitespace-nowrap text-foreground"
                 style={{ lineHeight: 1 }}
               >
-                josht<span className="text-primary">.</span>xyz
+                joshte<span className="text-primary">.</span>dev
               </motion.span>
             </Link>
 

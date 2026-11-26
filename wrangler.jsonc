@@ -1,4 +1,4 @@
-
+{
   "name": "portfolio",
   "main": ".open-next/worker.js",
   "keep_vars": true

@@ -1,5 +1,19 @@
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || "JoshuaTerrones";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
+async function getGitHubEnv() {
+  try {
+    const ctx = await getCloudflareContext({ async: true });
+    return {
+      username: ctx.env.GITHUB_USERNAME || GITHUB_USERNAME,
+      token: ctx.env.GITHUB_TOKEN || GITHUB_TOKEN,
+    };
+  } catch {
+    return { username: GITHUB_USERNAME, token: GITHUB_TOKEN };
+  }
+}
 
 export type GitHubRepo = {
   id: number;
@@ -38,7 +52,8 @@ async function graphqlFetch<T>(
   query: string,
   variables: Record<string, unknown>
 ): Promise<T | null> {
-  if (!GITHUB_TOKEN) {
+  const { token } = await getGitHubEnv();
+  if (!token) {
     console.warn("[github] GITHUB_TOKEN no configurado — devolviendo vacío.");
     return null;
   }
@@ -46,7 +61,7 @@ async function graphqlFetch<T>(
   const res = await fetch("https://api.github.com/graphql", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${GITHUB_TOKEN}`,
+      Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ query, variables }),
@@ -115,9 +130,10 @@ type PinnedNode = {
 };
 
 export async function getGitHubPinnedRepos(): Promise<GitHubRepo[]> {
+  const { username } = await getGitHubEnv();
   const data = await graphqlFetch<{ user: { pinnedItems: { nodes: PinnedNode[] } } }>(
     PINNED_QUERY,
-    { username: GITHUB_USERNAME }
+    { username }
   );
   if (!data) return [];
 
@@ -170,6 +186,7 @@ const LEVEL_MAP: Record<ContributionLevel, 0 | 1 | 2 | 3 | 4> = {
 };
 
 export async function getGitHubContributions(): Promise<GitHubContributions | null> {
+  const { username } = await getGitHubEnv();
   const data = await graphqlFetch<{
     user: {
       contributionsCollection: {
@@ -185,7 +202,7 @@ export async function getGitHubContributions(): Promise<GitHubContributions | nu
         };
       };
     };
-  }>(CONTRIBUTIONS_QUERY, { username: GITHUB_USERNAME });
+  }>(CONTRIBUTIONS_QUERY, { username });
 
   if (!data) return null;
   const calendar = data.user?.contributionsCollection?.contributionCalendar;
@@ -217,6 +234,7 @@ const PROFILE_QUERY = `
 `;
 
 export async function getGitHubProfile(): Promise<GitHubProfile | null> {
+  const { username } = await getGitHubEnv();
   const data = await graphqlFetch<{
     user: {
       followers: { totalCount: number };
@@ -226,7 +244,7 @@ export async function getGitHubProfile(): Promise<GitHubProfile | null> {
       avatarUrl: string;
       bio: string | null;
     };
-  }>(PROFILE_QUERY, { username: GITHUB_USERNAME });
+  }>(PROFILE_QUERY, { username });
 
   if (!data) return null;
 
@@ -241,16 +259,18 @@ export async function getGitHubProfile(): Promise<GitHubProfile | null> {
 }
 
 export async function getGitHubAllRepos(): Promise<GitHubRepo[]> {
-  if (!GITHUB_TOKEN) {
+  const { username, token } = await getGitHubEnv();
+
+  if (!token) {
     console.warn("[github] GITHUB_TOKEN no configurado — sin repos.");
     return [];
   }
 
   const res = await fetch(
-    `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated&direction=desc`,
+    `https://api.github.com/users/${username}/repos?per_page=100&sort=updated&direction=desc`,
     {
       headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
       },
